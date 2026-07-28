@@ -65,6 +65,7 @@ export default function MenuExperience() {
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
 
   const [sending, setSending] = useState(false);
@@ -199,6 +200,7 @@ export default function MenuExperience() {
     if (
       !customerName.trim() ||
       !customerPhone.trim() ||
+      !address.trim() ||
       cart.length === 0
     ) {
       return;
@@ -210,6 +212,7 @@ export default function MenuExperience() {
     const payload = {
       customerName: customerName.trim(),
       customerPhone: customerPhone.trim(),
+      address: address.trim(),
       notes: notes.trim(),
       total,
       items: cart.map((item) => ({
@@ -242,17 +245,18 @@ export default function MenuExperience() {
       const lines = cart
         .map(
           (item) =>
-            `• ${item.quantity}× ${item.drink.name}` +
-            ` — ${item.size}, ${item.temperature}, ${item.sugar}, ${item.beanType}` +
-            ` — ${item.unitPrice * item.quantity} EGP`,
+            `â€¢ ${item.quantity}أ— ${item.drink.name}` +
+            ` â€” ${item.size}, ${item.temperature}, ${item.sugar}, ${item.beanType}` +
+            ` â€” ${item.unitPrice * item.quantity} EGP`,
         )
         .join("\n");
 
       const message =
-        `New NØIR BEAN order ☕\n` +
+        `New NأکIR BEAN order âک•\n` +
         `Order: ${data.order.id}\n` +
         `Customer: ${customerName}\n` +
-        `Phone: ${customerPhone}\n\n` +
+        `Phone: ${customerPhone}\n` +
+        `Address: ${address}\n\n` +
         `${lines}\n\n` +
         `Total: ${total} EGP` +
         `${notes.trim() ? `\nNotes: ${notes.trim()}` : ""}`;
@@ -272,6 +276,7 @@ export default function MenuExperience() {
       setCart([]);
       setCustomerName("");
       setCustomerPhone("");
+      setAddress("");
       setNotes("");
     } catch (error) {
       setSuccess(
@@ -298,7 +303,7 @@ export default function MenuExperience() {
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[9px] uppercase tracking-[.45em] text-[#9c6746]">
-              NØIR BEAN · ORDER STUDIO
+              NأکIR BEAN آ· ORDER STUDIO
             </p>
 
             <h1 className="mt-4 max-w-[850px] font-serif text-[clamp(3.5rem,7vw,7.5rem)] leading-[.86] tracking-[-.05em]">
@@ -411,7 +416,7 @@ export default function MenuExperience() {
                           </span>
 
                           <p className="mt-2 text-[10px] text-[#775039]/60">
-                            NØIR{" "}
+                            NأکIR{" "}
                             {String(index + 1).padStart(2, "0")}
                           </p>
                         </div>
@@ -419,10 +424,10 @@ export default function MenuExperience() {
                         <button
                           type="button"
                           aria-label={`Toggle ${drink.name} favorite`}
-                          onClick={(event) => { event.stopPropagation(); toggleFavorite(drink.id); }}
+                          onClick={(event) => { event.stopPropagation(); toggleFavorite(drink.id); }}        
                           className={`grid h-11 w-11 place-items-center rounded-full border transition duration-300 ${favorites.includes(drink.id) ? "border-[#8d4b37]/30 bg-[#8d4b37] text-white" : "border-[#74482f]/12 bg-white/60"}`}
                         >
-                          <Heart size={18} fill={favorites.includes(drink.id) ? "currentColor" : "none"} />
+                          <Heart size={18} fill={favorites.includes(drink.id) ? "currentColor" : "none"} />  
                         </button>
                       </div>
 
@@ -461,7 +466,7 @@ export default function MenuExperience() {
                           </span>
 
                           <span className="text-xs text-[#9a6747] transition duration-300 group-hover:translate-x-1">
-                            Customize ↗
+                            Customize â†—
                           </span>
                         </div>
                       </div>
@@ -658,8 +663,8 @@ export default function MenuExperience() {
                           </p>
 
                           <p className="mt-1 text-xs leading-5 text-[#765039]">
-                            {item.size} · {item.temperature} ·{" "}
-                            {item.sugar} · {item.beanType}
+                            {item.size} آ· {item.temperature} آ·{" "}
+                            {item.sugar} آ· {item.beanType}
                           </p>
                         </div>
 
@@ -676,7 +681,7 @@ export default function MenuExperience() {
                       </div>
 
                       <div className="mt-4 flex items-center justify-between">
-                        <div className="flex items-center gap-2 rounded-full bg-[#3d2114] p-1 text-white">
+                        <div className="flex items-center gap-2 rounded-full bg-[#3d2114] p-1 text-white">   
                           <button
                             type="button"
                             onClick={() =>
@@ -734,6 +739,14 @@ export default function MenuExperience() {
                 />
 
                 <textarea
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
+                  placeholder="Delivery address"
+                  required
+                  className="min-h-24 w-full resize-none rounded-2xl border border-[#6b422c]/12 bg-white/60 px-4 py-4 outline-none"
+                />
+
+                <textarea
                   value={notes}
                   onChange={(event) =>
                     setNotes(event.target.value)
@@ -742,7 +755,7 @@ export default function MenuExperience() {
                   className="min-h-24 w-full resize-none rounded-2xl border border-[#6b422c]/12 bg-white/60 px-4 py-4 outline-none"
                 />
 
-                <div className="flex items-center justify-between border-t border-[#6b422c]/12 pt-5">
+                <div className="flex items-center justify-between border-t border-[#6b422c]/12 pt-5">        
                   <span>Total</span>
 
                   <strong className="font-serif text-3xl">
@@ -755,7 +768,8 @@ export default function MenuExperience() {
                   disabled={
                     sending ||
                     !customerName.trim() ||
-                    !customerPhone.trim()
+                    !customerPhone.trim() ||
+                    !address.trim()
                   }
                   onClick={confirmOrder}
                   className="flex w-full items-center justify-center gap-3 rounded-full bg-[#3d2114] px-6 py-4 text-white transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-45"
@@ -809,7 +823,7 @@ function OptionGroup({
             type="button"
             key={option}
             onClick={() => onChange(option)}
-            className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm transition ${
+            className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm transition ${ 
               value === option
                 ? "bg-[#3d2114] text-white shadow-md"
                 : "bg-white/60 text-[#5e3a27] hover:bg-white"
