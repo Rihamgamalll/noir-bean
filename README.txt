@@ -1,19 +1,11 @@
-NOIR BEAN - Address update
+NOIR BEAN Chatbot Upgrade
 
-Replace these files in your project with the matching files from this folder:
+Replace:
+- components/ChatBot.tsx
+- app/api/chat/route.ts
 
-1. components/MenuExperience.tsx
-2. components/AdminDashboard.tsx
-3. app/api/orders/route.ts
-4. app/api/admin/orders/route.ts
-5. app/orders/page.tsx
-
-The database columns address and location_url were already added. This update uses address only.
-
-After replacement run:
-  npm run build
-
-Then commit and push:
-  git add .
-  git commit -m "Add delivery address to orders"
-  git push
+Then run:
+npm run build
+git add .
+git commit -m "Upgrade chatbot fuzzy understanding and suggestions"
+git push

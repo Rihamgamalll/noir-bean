@@ -1,61 +1,839 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
 import { db } from "@/lib/db";
-import { fail,currentSession } from "@/lib/http";
+import { fail, currentSession } from "@/lib/http";
 import { uuid } from "@/lib/security";
 
-const schema=z.object({message:z.string().min(1).max(800),sessionId:z.string().min(4).max(100)});
-const isAr=(s:string)=>/[\u0600-\u06ff]/.test(s);
-const digits=(s:string)=>s.replace(/[٠-٩]/g,d=>String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(/[۰-۹]/g,d=>String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
-const norm=(s:string)=>digits(s).toLowerCase().replace(/[؟?!.,،]/g,' ').replace(/ـ/g,'').replace(/\s+/g,' ').trim();
-const money=(n:any,ar:boolean)=>`${Number(n).toFixed(Number(n)%1?2:0)} ${ar?'جنيه':'EGP'}`;
-const aliases:Record<string,string[]>= {
- espresso:['اسبريسو','إسبريسو'],americano:['امريكانو','أمريكانو'],latte:['لاتيه','لاتي'],
- 'spanish-latte':['سبانش لاتيه','اسبانيش لاتيه'],'vanilla-latte':['فانيلا لاتيه','فانيليا لاتيه'],
- 'caramel-macchiato':['كراميل ماكياتو','كاراميل ماكياتو'],'flat-white':['فلات وايت'],cappuccino:['كابتشينو'],mocha:['موكا'],
- 'cold-brew':['كولد برو','كولدبرو'],affogato:['افوجاتو','أفوجاتو'],'white-mocha':['وايت موكا'],
- 'plain-croissant':['كرواسون سادة','كرواسون ساده'],'chocolate-croissant':['كرواسون شوكولاتة','كرواسون شوكلاته'],
- 'almond-croissant':['كرواسون لوز'],'pistachio-croissant':['كرواسون فستق'],'cheese-croissant':['كرواسون جبنة','كرواسون جبنه'],
- 'turkey-cheese-croissant':['كرواسون تركي وجبنة','كرواسون تركي وجبنه']
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const schema = z.object({
+  message: z.string().min(1).max(800),
+  sessionId: z.string().min(4).max(100),
+});
+
+const isArabic = (value: string) => /[\u0600-\u06ff]/.test(value);
+
+const arabicDigitsToEnglish = (value: string) =>
+  value
+    .replace(/[٠-٩]/g, (digit) =>
+      String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)),
+    )
+    .replace(/[۰-۹]/g, (digit) =>
+      String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)),
+    );
+
+function normalize(value: string) {
+  return arabicDigitsToEnglish(value)
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u064B-\u065F\u0670]/g, "")
+    .replace(/[أإآٱ]/g, "ا")
+    .replace(/ؤ/g, "و")
+    .replace(/ئ/g, "ي")
+    .replace(/ى/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/ـ/g, "")
+    .replace(/(.)\1{2,}/g, "$1$1")
+    .replace(/[؟?!.,،:;'"()[\]{}<>/\\|@#$%^&*_+=~`-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function compact(value: string) {
+  return normalize(value).replace(/\s+/g, "");
+}
+
+function levenshtein(a: string, b: string) {
+  const left = compact(a);
+  const right = compact(b);
+
+  if (left === right) return 0;
+  if (!left.length) return right.length;
+  if (!right.length) return left.length;
+
+  const previous = Array.from(
+    { length: right.length + 1 },
+    (_, index) => index,
+  );
+
+  for (let i = 1; i <= left.length; i += 1) {
+    const current = [i];
+
+    for (let j = 1; j <= right.length; j += 1) {
+      const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+
+      current[j] = Math.min(
+        current[j - 1] + 1,
+        previous[j] + 1,
+        previous[j - 1] + cost,
+      );
+    }
+
+    for (let j = 0; j < current.length; j += 1) {
+      previous[j] = current[j];
+    }
+  }
+
+  return previous[right.length];
+}
+
+function similarity(a: string, b: string) {
+  const left = compact(a);
+  const right = compact(b);
+  const longest = Math.max(left.length, right.length);
+
+  if (!longest) return 1;
+
+  return 1 - levenshtein(left, right) / longest;
+}
+
+function fuzzyIncludes(text: string, phrase: string, threshold = 0.72) {
+  const source = normalize(text);
+  const target = normalize(phrase);
+
+  if (!source || !target) return false;
+  if (source.includes(target)) return true;
+
+  const sourceWords = source.split(" ");
+  const targetWords = target.split(" ");
+
+  if (targetWords.length === 1) {
+    return sourceWords.some((word) => {
+      const adaptiveThreshold =
+        target.length <= 4 ? 0.75 : threshold;
+
+      return similarity(word, target) >= adaptiveThreshold;
+    });
+  }
+
+  for (
+    let start = 0;
+    start <= sourceWords.length - targetWords.length;
+    start += 1
+  ) {
+    const chunk = sourceWords
+      .slice(start, start + targetWords.length)
+      .join(" ");
+
+    if (similarity(chunk, target) >= threshold) {
+      return true;
+    }
+  }
+
+  return similarity(source, target) >= threshold;
+}
+
+function hasAny(text: string, phrases: string[], threshold = 0.72) {
+  return phrases.some((phrase) =>
+    fuzzyIncludes(text, phrase, threshold),
+  );
+}
+
+const money = (value: unknown, arabic: boolean) =>
+  `${Number(value).toFixed(Number(value) % 1 ? 2 : 0)} ${
+    arabic ? "جنيه" : "EGP"
+  }`;
+
+const aliases: Record<string, string[]> = {
+  espresso: [
+    "espresso",
+    "اسبريسو",
+    "اسبرسو",
+    "اكسبريسو",
+    "اكسبرسو",
+  ],
+  americano: [
+    "americano",
+    "امريكانو",
+    "امريكانو",
+    "امريكنو",
+  ],
+  latte: [
+    "latte",
+    "لاتيه",
+    "لاتي",
+    "لاتية",
+  ],
+  "spanish-latte": [
+    "spanish latte",
+    "سبانش لاتيه",
+    "اسبانيش لاتيه",
+    "سبانش لاتي",
+  ],
+  "vanilla-latte": [
+    "vanilla latte",
+    "فانيلا لاتيه",
+    "فانيليا لاتيه",
+    "فانيلا لاتي",
+  ],
+  "caramel-macchiato": [
+    "caramel macchiato",
+    "كراميل ماكياتو",
+    "كاراميل ماكياتو",
+    "كرامل مكياتو",
+  ],
+  "flat-white": [
+    "flat white",
+    "فلات وايت",
+    "فلاتوايت",
+  ],
+  cappuccino: [
+    "cappuccino",
+    "كابتشينو",
+    "كابوتشينو",
+    "كبتشينو",
+  ],
+  mocha: [
+    "mocha",
+    "موكا",
+    "موكا",
+  ],
+  "cold-brew": [
+    "cold brew",
+    "كولد برو",
+    "كولدبرو",
+    "كول برو",
+  ],
+  affogato: [
+    "affogato",
+    "افوجاتو",
+    "افوقاتو",
+  ],
+  "white-mocha": [
+    "white mocha",
+    "وايت موكا",
+    "وايت موكا",
+  ],
+  "plain-croissant": [
+    "plain croissant",
+    "كرواسون ساده",
+    "كرواسون ساد",
+    "كروسان ساده",
+  ],
+  "chocolate-croissant": [
+    "chocolate croissant",
+    "كرواسون شوكولاته",
+    "كرواسون شوكلاته",
+    "كروسان شوكولاته",
+  ],
+  "almond-croissant": [
+    "almond croissant",
+    "كرواسون لوز",
+    "كروسان لوز",
+  ],
+  "pistachio-croissant": [
+    "pistachio croissant",
+    "كرواسون فستق",
+    "كروسان فستق",
+    "كرواسو فستق",
+  ],
+  "cheese-croissant": [
+    "cheese croissant",
+    "كرواسون جبنه",
+    "كرواسون جبنة",
+    "كروسان جبنه",
+  ],
+  "turkey-cheese-croissant": [
+    "turkey cheese croissant",
+    "كرواسون تركي وجبنه",
+    "كرواسون تركي وجبنة",
+    "كروسان تركي وجبنه",
+  ],
 };
 
-export async function POST(r:Request){
- const p=schema.safeParse(await r.json().catch(()=>null));if(!p.success)return fail("Invalid message");
- const text=p.data.message,q=norm(text),ar=isAr(text);
- const [rows]:any=await db.query(`SELECT p.slug,p.name_en,p.name_ar,p.description_en,p.description_ar,p.base_price,p.is_available,p.type,c.name_en category_en,c.name_ar category_ar FROM products p JOIN categories c ON c.id=p.category_id WHERE p.is_available=1 ORDER BY p.sort_order,p.name_en`);
- const products=rows||[],drinks=products.filter((x:any)=>x.type==='drink'),pastries=products.filter((x:any)=>x.type==='pastry');
- const find=(slug:string)=>products.find((x:any)=>x.slug===slug);
- const productNames=(x:any)=>[x.name_en,x.name_ar,x.slug.replace(/-/g,' '),...(aliases[x.slug]||[])].map(norm);
- const match=products.find((x:any)=>productNames(x).some((n:string)=>n&&q.includes(n)));
- const productLines=(xs:any[])=>xs.map(x=>`${ar?x.name_ar:x.name_en} — ${money(x.base_price,ar)}`).join(ar?'، ':'; ');
- let reply='';
+const intentWords = {
+  calculate: [
+    "احسب",
+    "الحساب",
+    "المجموع",
+    "كام",
+    "تكلفه",
+    "التكلفه",
+    "total",
+    "calculate",
+    "how much",
+    "cost",
+  ],
+  headache: [
+    "مصدع",
+    "مصدعه",
+    "مصدعه",
+    "صداع",
+    "صداعي",
+    "وجع دماغ",
+    "دماغي وجعاني",
+    "headache",
+    "migraine",
+  ],
+  beans: [
+    "نوع البن",
+    "انواع البن",
+    "البن",
+    "bean type",
+    "beans",
+    "برازيلي",
+    "كولومبي",
+    "اثيوبي",
+    "ديكاف",
+  ],
+  time: [
+    "امتي",
+    "متي",
+    "الصبح",
+    "المساء",
+    "بعد الاكل",
+    "قبل الشغل",
+    "when drink",
+  ],
+  croissant: [
+    "كرواسون",
+    "كروسان",
+    "كرواسو",
+    "croissant",
+    "pastry",
+  ],
+  cheapest: [
+    "ارخص",
+    "اقل سعر",
+    "cheapest",
+    "lowest price",
+  ],
+  expensive: [
+    "اغلي",
+    "اعلي سعر",
+    "most expensive",
+    "highest price",
+  ],
+  strong: [
+    "قوي",
+    "تقيل",
+    "كافيين",
+    "يفوق",
+    "افوق",
+    "تركيز",
+    "strong",
+    "bold",
+  ],
+  sweet: [
+    "حلو",
+    "مسكر",
+    "سكري",
+    "كريمي",
+    "sweet",
+    "creamy",
+  ],
+  cold: [
+    "بارد",
+    "ساقع",
+    "متلج",
+    "مثلج",
+    "iced",
+    "cold",
+  ],
+  menu: [
+    "منيو",
+    "انواع القهوه",
+    "مشروبات",
+    "products",
+    "menu",
+  ],
+  location: [
+    "مكان",
+    "عنوان",
+    "فين",
+    "location",
+    "address",
+  ],
+  delivery: [
+    "توصيل",
+    "دليفري",
+    "اوردر",
+    "طلب",
+    "delivery",
+    "order",
+  ],
+  account: [
+    "حساب",
+    "تسجيل",
+    "اكونت",
+    "account",
+    "register",
+    "login",
+  ],
+  greeting: [
+    "اهلا",
+    "مرحبا",
+    "السلام",
+    "صباح الخير",
+    "مساء الخير",
+    "hello",
+    "hi",
+    "hey",
+  ],
+};
 
- // Order calculations using live prices.
- const calcIntent=/احسب|الحساب|المجموع|كام|تكلفة|total|calculate|how much|cost/.test(q);
- const found:any[]=[];
- for(const x of products){const name=productNames(x).find((n:string)=>q.includes(n));if(!name)continue;const esc=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');const before=q.match(new RegExp(`(\\d+)\\s*(?:x|×)?\\s*${esc}`));const after=q.match(new RegExp(`${esc}\\s*(?:x|×)?\\s*(\\d+)`));found.push({x,qty:Math.max(1,Number(before?.[1]||after?.[1]||1))});}
- if(calcIntent&&found.length){const total=found.reduce((s,v)=>s+Number(v.x.base_price)*v.qty,0);reply=found.map(v=>`${v.qty} × ${ar?v.x.name_ar:v.x.name_en} = ${money(Number(v.x.base_price)*v.qty,ar)}`).join('\n')+`\n${ar?'الإجمالي':'Total'} = ${money(total,ar)}\n${ar?'الأسعار الأساسية قبل الإضافات أو تغيير الحجم.':'Base prices before extras or size upgrades.'}`;}
+export async function POST(request: Request) {
+  const parsed = schema.safeParse(
+    await request.json().catch(() => null),
+  );
 
- // Price range recommendations.
- if(!reply){const range=q.match(/(?:من|بين|from|between)\s*(\d+(?:\.\d+)?)\s*(?:ل|الى|إلى|و|to|and|-)\s*(\d+(?:\.\d+)?)/i);if(range){const min=Math.min(+range[1],+range[2]),max=Math.max(+range[1],+range[2]);const xs=products.filter((x:any)=>+x.base_price>=min&&+x.base_price<=max);reply=xs.length?(ar?`المتاح من ${money(min,true)} إلى ${money(max,true)}:\n${productLines(xs)}`:`Available from ${money(min,false)} to ${money(max,false)}:\n${productLines(xs)}`):(ar?'مفيش أصناف متاحة في الرينج ده حاليًا.':'No available items in that range right now.');}}
+  if (!parsed.success) {
+    return fail("Invalid message");
+  }
 
- if(!reply&&/مصدع|صداع|headache|migraine/.test(q)) reply=ar?"لو الصداع بسيط وممكن يكون من قلة الكافيين: اشرب مياه الأول، وبعدها Espresso صغير أو Americano خفيف لو أنت معتاد على القهوة. لو معدتك حساسة اختار Latte أخف. القهوة مش علاج للصداع، ولو الصداع شديد أو متكرر أو مصحوب بأعراض غير طبيعية استشر طبيبًا.":"For a mild headache that may be caffeine withdrawal: hydrate first, then consider a small Espresso or light Americano if you normally drink coffee. Choose a Latte if your stomach is sensitive. Coffee is not a headache treatment; seek medical care for severe, recurring, or unusual symptoms.";
- else if(!reply&&/نوع البن|انواع البن|أنواع البن|bean type|beans|برازيلي|كولومبي|اثيوبي|إثيوبي|ديكاف/.test(q)) reply=ar?"أنواع البن المتاحة للاختيار: House Blend متوازن للاستخدام اليومي؛ Brazilian بطعم شوكولاتة ومكسرات وحموضة قليلة ومناسب للاتيه والكابتشينو؛ Colombian متوازن بكراميل وفاكهة خفيفة ومناسب للأمريكانو والفلات وايت؛ Ethiopian عطري وفاكهي وحموضته أوضح ومناسب للإسبريسو أو القهوة السوداء؛ Decaf بطعم القهوة مع كافيين أقل ومناسب للمساء أو لمن يقلل الكافيين.":"Available bean choices: House Blend for a balanced everyday cup; Brazilian for chocolate, nutty notes and low acidity—great with milk; Colombian for caramel and gentle fruit—good for Americano and Flat White; Ethiopian for floral, fruity brightness—best black or as espresso; Decaf for coffee flavor with less caffeine, especially later in the day.";
- else if(!reply&&/امتى|متي|when.*drink|الصبح|المساء|بعد الاكل|قبل الشغل/.test(q)) reply=ar?"للصباح أو قبل الشغل: Espresso أو Americano. مع الفطار: Cappuccino أو Latte. بعد الأكل: Espresso أو Affogato لو عايز حلو. للجو الحار: Cold Brew. للمساء: Decaf أو Latte خفيف. لو عايز حلو وكريمي: Spanish Latte أو Mocha.":"Morning or before work: Espresso or Americano. With breakfast: Cappuccino or Latte. After a meal: Espresso, or Affogato for dessert. Hot weather: Cold Brew. Evening: Decaf or a light Latte. Sweet and creamy: Spanish Latte or Mocha.";
- else if(!reply&&/كرواسون|croissant|pastr/.test(q)){reply=ar?`الكرواسون المتاح حاليًا (${pastries.length} أنواع):\n${productLines(pastries)}\nالسادة خفيف مع القهوة، الشوكولاتة واللوز والفستق للحلو، الجبنة أو التركي والجبنة للفطار أو وجبة مشبعة.`:`Available croissants (${pastries.length} types):\n${productLines(pastries)}\nPlain pairs lightly with coffee; chocolate, almond and pistachio are sweet; cheese or turkey & cheese work well for breakfast or a filling snack.`}
- else if(!reply&&/ارخص|أرخص|cheapest|اقل سعر/.test(q)){const x=[...products].sort((a:any,b:any)=>a.base_price-b.base_price)[0];reply=ar?`أرخص اختيار متاح هو ${x.name_ar} بسعر ${money(x.base_price,true)}.`:`The cheapest available item is ${x.name_en} at ${money(x.base_price,false)}.`}
- else if(!reply&&/اغلى|أغلى|most expensive|highest price/.test(q)){const x=[...products].sort((a:any,b:any)=>b.base_price-a.base_price)[0];reply=ar?`أعلى سعر حاليًا هو ${x.name_ar} بسعر ${money(x.base_price,true)}.`:`The highest current price is ${x.name_en} at ${money(x.base_price,false)}.`}
- else if(!reply&&/قوي|strong|bold|كافيين|يفوق/.test(q)){const x=find('espresso')||find('americano')||drinks[0];reply=ar?`للطعم القوي والتركيز اختار ${x.name_ar}: ${x.description_ar||''} — ${money(x.base_price,true)}. لو عايزه أطول وأخف شوية اختار Americano.`:`For a bold, focused cup, choose ${x.name_en}: ${x.description_en||''} — ${money(x.base_price,false)}. Choose Americano for a longer, slightly lighter drink.`}
- else if(!reply&&/حلو|sweet|كريمي|creamy/.test(q)){const x=find('spanish-latte')||find('mocha');reply=x?(ar?`اختيار حلو وكريمي مناسب: ${x.name_ar} بسعر ${money(x.base_price,true)}. ولو بتحب الشوكولاتة اختار Mocha أو White Mocha.`:`A sweet creamy pick: ${x.name_en} at ${money(x.base_price,false)}. For chocolate, choose Mocha or White Mocha.`):''}
- else if(!reply&&/بارد|ساقع|iced|cold/.test(q)){const xs=drinks.filter((x:any)=>/cold|iced/.test(x.slug)||/بارد|مثلج/.test(x.name_ar)||['americano','latte','vanilla-latte','caramel-macchiato','mocha','white-mocha'].includes(x.slug));reply=ar?`الاختيارات الباردة المقترحة:\n${productLines(xs.slice(0,8))}`:`Recommended cold choices:\n${productLines(xs.slice(0,8))}`}
- else if(!reply&&/منيو|menu|انواع القهوة|أنواع القهوة|products|مشروبات/.test(q)) reply=ar?`عندنا ${drinks.length} مشروب و${pastries.length} نوع كرواسون. المشروبات تشمل: ${drinks.map((x:any)=>x.name_ar).join('، ')}. قولي ذوقك قوي ولا حلو ولا بارد، أو ميزانيتك من كام لكام.`:`We have ${drinks.length} drinks and ${pastries.length} croissants. Drinks include: ${drinks.map((x:any)=>x.name_en).join(', ')}. Tell me whether you prefer bold, sweet, cold, or give me a budget range.`;
- else if(!reply&&/مكان|عنوان|location|address|فين/.test(q)) reply=ar?"العنوان وبيانات التواصل موجودة في قسم Contact أسفل الصفحة، ويمكن لصاحب الكافيه تعديلها قبل الاستضافة.":"The address and contact details are in the Contact section and can be updated by the café owner before deployment.";
- else if(!reply&&/توصيل|delivery|دليفري|اوردر|order/.test(q)) reply=ar?"اختار المشروب أو الكرواسون من المنيو، حدّد الحجم والإضافات، وبعدها أضفه للسلة وأكمل الطلب. حسابك يحفظ الطلبات السابقة.":"Choose a drink or croissant from the menu, select size and extras, add it to the cart, then complete the order. Your account stores past orders.";
- else if(!reply&&/حساب|register|login|تسجيل|اكونت|account/.test(q)) reply=ar?"من أيقونة الشخص فوق يظهر للضيف فقط: تسجيل الدخول أو إنشاء حساب. بعد تسجيل الدخول تظهر الحساب والطلبات والمفضلة، ولو الحساب Admin تظهر لوحة التحكم أيضًا.":"The user icon shows only Log in and Create account for guests. After sign-in it shows Account, Orders and Favorites; Admin accounts also see the Dashboard.";
- else if(!reply&&match) reply=ar?`${match.name_ar}: ${match.description_ar||'متاح الآن في المنيو'} — السعر ${money(match.base_price,true)}. القسم: ${match.category_ar}.`:`${match.name_en}: ${match.description_en||'Available now'} — ${money(match.base_price,false)}. Category: ${match.category_en}.`;
- else if(!reply&&/hello|hi|hey|السلام|اهلا|أهلا|مرحبا|صباح|مساء/.test(q)) reply=ar?"أهلًا بيك في NØIR BEAN ☕ اسألني عن أي مشروب أو كرواسون، الأسعار، رينج ميزانية، أنواع البن، ترشيح حسب وقت اليوم أو المزاج، أو حساب إجمالي طلبك.":"Welcome to NØIR BEAN ☕ Ask about any drink or croissant, prices, budget ranges, bean types, recommendations by time or mood, or an order total.";
- else if(!reply) reply=ar?"اسألني براحتك عن المنيو الحقيقية: مثلًا «أنا مصدعة أشرب إيه؟»، «عايزة حاجة من 100 لـ150»، «إيه الفرق بين البن البرازيلي والإثيوبي؟»، «احسب 2 لاتيه وكرواسون فستق»، أو اسم أي مشروب/كرواسون.":"Ask me about the live menu, for example: “What should I drink for a mild headache?”, “Something from 100 to 150”, “Brazilian vs Ethiopian beans”, “Calculate 2 lattes and a pistachio croissant”, or any item name.";
+  const text = parsed.data.message;
+  const query = normalize(text);
+  const arabic = isArabic(text);
 
- const s=currentSession();try{await db.execute("INSERT INTO chat_messages(id,user_id,session_id,role,content) VALUES(?,?,?,?,?),(?,?,?,?,?)",[uuid(),s?.userId||null,p.data.sessionId,'user',text,uuid(),s?.userId||null,p.data.sessionId,'assistant',reply])}catch{}
- return NextResponse.json({reply});
+  const [rows]: any = await db.query(`
+    SELECT
+      p.slug,
+      p.name_en,
+      p.name_ar,
+      p.description_en,
+      p.description_ar,
+      p.base_price,
+      p.is_available,
+      p.type,
+      c.name_en AS category_en,
+      c.name_ar AS category_ar
+    FROM products p
+    JOIN categories c ON c.id = p.category_id
+    WHERE p.is_available = 1
+    ORDER BY p.sort_order, p.name_en
+  `);
+
+  const products = rows || [];
+  const drinks = products.filter(
+    (product: any) => product.type === "drink",
+  );
+  const pastries = products.filter(
+    (product: any) => product.type === "pastry",
+  );
+
+  const findProduct = (slug: string) =>
+    products.find((product: any) => product.slug === slug);
+
+  const productNames = (product: any) =>
+    [
+      product.name_en,
+      product.name_ar,
+      product.slug.replace(/-/g, " "),
+      ...(aliases[product.slug] || []),
+    ]
+      .filter(Boolean)
+      .map(normalize);
+
+  const productScore = (product: any) =>
+    Math.max(
+      ...productNames(product).map((name: string) => {
+        if (query.includes(name)) return 1;
+
+        const words = query.split(" ");
+        const wordScore = Math.max(
+          0,
+          ...words.map((word) => similarity(word, name)),
+        );
+
+        return Math.max(
+          wordScore,
+          similarity(query, name),
+          fuzzyIncludes(query, name, 0.72) ? 0.8 : 0,
+        );
+      }),
+    );
+
+  const productMatch = products
+    .map((product: any) => ({
+      product,
+      score: productScore(product),
+    }))
+    .sort((a: any, b: any) => b.score - a.score)[0];
+
+  const matchedProduct =
+    productMatch?.score >= 0.66
+      ? productMatch.product
+      : null;
+
+  const productLines = (items: any[]) =>
+    items
+      .map(
+        (item) =>
+          `${arabic ? item.name_ar : item.name_en} — ${money(
+            item.base_price,
+            arabic,
+          )}`,
+      )
+      .join(arabic ? "، " : "; ");
+
+  let reply = "";
+
+  const calculateIntent = hasAny(
+    query,
+    intentWords.calculate,
+    0.7,
+  );
+
+  const foundItems: any[] = [];
+
+  for (const product of products) {
+    const matchedName = productNames(product)
+      .sort((a: string, b: string) => b.length - a.length)
+      .find((name: string) =>
+        fuzzyIncludes(query, name, 0.72),
+      );
+
+    if (!matchedName) continue;
+
+    const escapedName = matchedName.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&",
+    );
+
+    const exactBefore = query.match(
+      new RegExp(`(\\d+)\\s*(?:x|×)?\\s*${escapedName}`),
+    );
+
+    const exactAfter = query.match(
+      new RegExp(`${escapedName}\\s*(?:x|×)?\\s*(\\d+)`),
+    );
+
+    const nearbyNumber = query.match(
+      /(?:^|\s)(\d+)\s*(?:x|×)?\s*/,
+    );
+
+    const quantity = Math.max(
+      1,
+      Number(
+        exactBefore?.[1] ||
+          exactAfter?.[1] ||
+          nearbyNumber?.[1] ||
+          1,
+      ),
+    );
+
+    if (
+      !foundItems.some(
+        (item) => item.product.slug === product.slug,
+      )
+    ) {
+      foundItems.push({
+        product,
+        quantity,
+      });
+    }
+  }
+
+  if (calculateIntent && foundItems.length) {
+    const total = foundItems.reduce(
+      (sum, item) =>
+        sum +
+        Number(item.product.base_price) *
+          item.quantity,
+      0,
+    );
+
+    reply =
+      foundItems
+        .map(
+          (item) =>
+            `${item.quantity} × ${
+              arabic
+                ? item.product.name_ar
+                : item.product.name_en
+            } = ${money(
+              Number(item.product.base_price) *
+                item.quantity,
+              arabic,
+            )}`,
+        )
+        .join("\n") +
+      `\n${arabic ? "الإجمالي" : "Total"} = ${money(
+        total,
+        arabic,
+      )}\n${
+        arabic
+          ? "الأسعار الأساسية قبل الإضافات أو تغيير الحجم."
+          : "Base prices before extras or size upgrades."
+      }`;
+  }
+
+  if (!reply) {
+    const range = query.match(
+      /(?:من|بين|from|between)\s*(\d+(?:\.\d+)?)\s*(?:ل|الي|و|to|and|-)\s*(\d+(?:\.\d+)?)/i,
+    );
+
+    if (range) {
+      const minimum = Math.min(
+        Number(range[1]),
+        Number(range[2]),
+      );
+
+      const maximum = Math.max(
+        Number(range[1]),
+        Number(range[2]),
+      );
+
+      const available = products.filter(
+        (product: any) =>
+          Number(product.base_price) >= minimum &&
+          Number(product.base_price) <= maximum,
+      );
+
+      reply = available.length
+        ? arabic
+          ? `المتاح من ${money(
+              minimum,
+              true,
+            )} إلى ${money(maximum, true)}:\n${productLines(
+              available,
+            )}`
+          : `Available from ${money(
+              minimum,
+              false,
+            )} to ${money(maximum, false)}:\n${productLines(
+              available,
+            )}`
+        : arabic
+          ? "مفيش أصناف متاحة في الرينج ده حاليًا."
+          : "No available items in that range right now.";
+    }
+  }
+
+  if (
+    !reply &&
+    hasAny(query, intentWords.headache, 0.62)
+  ) {
+    reply = arabic
+      ? "لو الصداع بسيط وممكن يكون من قلة الكافيين: اشربي مياه الأول، وبعدها ممكن Espresso صغير أو Americano خفيف لو إنتِ معتادة على القهوة. ولو معدتك حساسة اختاري Latte أخف. القهوة مش علاج للصداع، ولو الصداع شديد أو متكرر أو غير معتاد يفضل استشارة طبيب."
+      : "For a mild headache that may be related to caffeine withdrawal, hydrate first. If you normally drink coffee, consider a small Espresso or light Americano. Choose a Latte if your stomach is sensitive. Coffee is not a headache treatment; seek medical advice for severe, recurring, or unusual symptoms.";
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.beans, 0.66)
+  ) {
+    reply = arabic
+      ? "أنواع البن المتاحة: House Blend متوازن للاستخدام اليومي؛ Brazilian بطعم شوكولاتة ومكسرات وحموضة قليلة ومناسب للاتيه والكابتشينو؛ Colombian متوازن بكراميل وفاكهة خفيفة ومناسب للأمريكانو والفلات وايت؛ Ethiopian عطري وفاكهي وحموضته أوضح ومناسب للإسبريسو أو القهوة السوداء؛ Decaf بطعم القهوة مع كافيين أقل ومناسب للمساء."
+      : "Available bean choices: House Blend for a balanced everyday cup; Brazilian for chocolate and nutty notes with low acidity; Colombian for caramel and gentle fruit; Ethiopian for floral, fruity brightness; and Decaf for coffee flavor with less caffeine.";
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.time, 0.68)
+  ) {
+    reply = arabic
+      ? "للصباح أو قبل الشغل: Espresso أو Americano. مع الفطار: Cappuccino أو Latte. بعد الأكل: Espresso أو Affogato لو عايزة حاجة حلوة. للجو الحار: Cold Brew. للمساء: Decaf أو Latte خفيف."
+      : "Morning or before work: Espresso or Americano. With breakfast: Cappuccino or Latte. After a meal: Espresso, or Affogato for dessert. Hot weather: Cold Brew. Evening: Decaf or a light Latte.";
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.croissant, 0.62)
+  ) {
+    reply = arabic
+      ? `الكرواسون المتاح حاليًا (${pastries.length} أنواع):\n${productLines(
+          pastries,
+        )}\nالسادة خفيف مع القهوة، والشوكولاتة واللوز والفستق للحلو، والجبنة أو التركي والجبنة للفطار أو وجبة مشبعة.`
+      : `Available croissants (${pastries.length} types):\n${productLines(
+          pastries,
+        )}\nPlain pairs lightly with coffee; chocolate, almond and pistachio are sweet; cheese or turkey and cheese work well for breakfast.`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.cheapest, 0.7)
+  ) {
+    const cheapest = [...products].sort(
+      (a: any, b: any) =>
+        Number(a.base_price) - Number(b.base_price),
+    )[0];
+
+    reply = arabic
+      ? `أرخص اختيار متاح هو ${cheapest.name_ar} بسعر ${money(
+          cheapest.base_price,
+          true,
+        )}.`
+      : `The cheapest available item is ${
+          cheapest.name_en
+        } at ${money(cheapest.base_price, false)}.`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.expensive, 0.7)
+  ) {
+    const mostExpensive = [...products].sort(
+      (a: any, b: any) =>
+        Number(b.base_price) - Number(a.base_price),
+    )[0];
+
+    reply = arabic
+      ? `أعلى سعر حاليًا هو ${
+          mostExpensive.name_ar
+        } بسعر ${money(mostExpensive.base_price, true)}.`
+      : `The highest current price is ${
+          mostExpensive.name_en
+        } at ${money(mostExpensive.base_price, false)}.`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.strong, 0.66)
+  ) {
+    const strongest =
+      findProduct("espresso") ||
+      findProduct("americano") ||
+      drinks[0];
+
+    reply = arabic
+      ? `للطعم القوي والتركيز اختاري ${
+          strongest.name_ar
+        }: ${strongest.description_ar || ""} — ${money(
+          strongest.base_price,
+          true,
+        )}. ولو عايزاه أطول وأخف شوية اختاري Americano.`
+      : `For a bold, focused cup, choose ${
+          strongest.name_en
+        }: ${strongest.description_en || ""} — ${money(
+          strongest.base_price,
+          false,
+        )}. Choose Americano for a longer, slightly lighter drink.`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.sweet, 0.66)
+  ) {
+    const sweet =
+      findProduct("spanish-latte") ||
+      findProduct("mocha") ||
+      drinks[0];
+
+    reply = arabic
+      ? `اختيار حلو وكريمي مناسب: ${
+          sweet.name_ar
+        } بسعر ${money(
+          sweet.base_price,
+          true,
+        )}. ولو بتحبي الشوكولاتة اختاري Mocha أو White Mocha.`
+      : `A sweet, creamy pick: ${
+          sweet.name_en
+        } at ${money(
+          sweet.base_price,
+          false,
+        )}. For chocolate, choose Mocha or White Mocha.`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.cold, 0.66)
+  ) {
+    const coldChoices = drinks.filter(
+      (product: any) =>
+        /cold|iced/.test(product.slug) ||
+        /بارد|مثلج/.test(
+          normalize(product.name_ar || ""),
+        ) ||
+        [
+          "americano",
+          "latte",
+          "vanilla-latte",
+          "caramel-macchiato",
+          "mocha",
+          "white-mocha",
+        ].includes(product.slug),
+    );
+
+    reply = arabic
+      ? `الاختيارات الباردة المقترحة:\n${productLines(
+          coldChoices.slice(0, 8),
+        )}`
+      : `Recommended cold choices:\n${productLines(
+          coldChoices.slice(0, 8),
+        )}`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.menu, 0.68)
+  ) {
+    reply = arabic
+      ? `عندنا ${drinks.length} مشروب و${pastries.length} نوع كرواسون. المشروبات تشمل: ${drinks
+          .map((product: any) => product.name_ar)
+          .join(
+            "، ",
+          )}. قولي ذوقك قوي ولا حلو ولا بارد، أو ميزانيتك من كام لكام.`
+      : `We have ${drinks.length} drinks and ${
+          pastries.length
+        } croissants. Drinks include: ${drinks
+          .map((product: any) => product.name_en)
+          .join(
+            ", ",
+          )}. Tell me whether you prefer bold, sweet, cold, or give me a budget range.`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.location, 0.7)
+  ) {
+    reply = arabic
+      ? "العنوان وبيانات التواصل موجودة في قسم Contact أسفل الصفحة."
+      : "The address and contact details are in the Contact section at the bottom of the page.";
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.delivery, 0.68)
+  ) {
+    reply = arabic
+      ? "اختاري المشروب أو الكرواسون من المنيو، حددي الحجم والإضافات، وبعدها أضيفيه للسلة واكتبي الاسم ورقم الهاتف والعنوان ثم أكدي الطلب."
+      : "Choose a drink or croissant, select the size and extras, add it to the cart, then enter your name, phone number and address to confirm the order.";
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.account, 0.7)
+  ) {
+    reply = arabic
+      ? "من أيقونة الشخص فوق تقدري تسجلي الدخول أو تعملي حساب. بعد تسجيل الدخول تظهر الحساب والطلبات والمفضلة، ولو الحساب Admin تظهر لوحة التحكم."
+      : "Use the user icon to log in or create an account. After signing in, you can access Account, Orders and Favorites; Admin accounts also see the Dashboard.";
+  } else if (!reply && matchedProduct) {
+    reply = arabic
+      ? `${matchedProduct.name_ar}: ${
+          matchedProduct.description_ar ||
+          "متاح الآن في المنيو"
+        } — السعر ${money(
+          matchedProduct.base_price,
+          true,
+        )}. القسم: ${matchedProduct.category_ar}.`
+      : `${matchedProduct.name_en}: ${
+          matchedProduct.description_en || "Available now"
+        } — ${money(
+          matchedProduct.base_price,
+          false,
+        )}. Category: ${matchedProduct.category_en}.`;
+  } else if (
+    !reply &&
+    hasAny(query, intentWords.greeting, 0.68)
+  ) {
+    reply = arabic
+      ? "أهلًا بيك في NØIR BEAN ☕ اسأليني بطريقتك حتى لو في أخطاء كتابة. قولي ذوقك، ميزانيتك، أو اسم أي مشروب وأنا أساعدك."
+      : "Welcome to NØIR BEAN ☕ Ask naturally, even with typos. Tell me your taste, budget, or any item name and I’ll help.";
+  } else if (!reply) {
+    reply = arabic
+      ? "قوليلي بتحبي المشروب قوي ولا حلو ولا بارد، أو اكتبي ميزانيتك، أو اسم أي مشروب/كرواسون حتى لو الكلمة فيها غلطة بسيطة."
+      : "Tell me whether you prefer bold, sweet or cold, give me a budget, or type any drink or croissant name—even with a small typo.";
+  }
+
+  const session = currentSession();
+
+  try {
+    await db.execute(
+      `
+        INSERT INTO chat_messages (
+          id,
+          user_id,
+          session_id,
+          role,
+          content
+        )
+        VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)
+      `,
+      [
+        uuid(),
+        session?.userId || null,
+        parsed.data.sessionId,
+        "user",
+        text,
+        uuid(),
+        session?.userId || null,
+        parsed.data.sessionId,
+        "assistant",
+        reply,
+      ],
+    );
+  } catch {
+    // Chat replies should still work if logging fails.
+  }
+
+  return NextResponse.json({ reply });
 }
