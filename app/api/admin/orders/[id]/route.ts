@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server"; import { z } from "zod"; import { requireAdmin,fail } from "@/lib/http"; import { db } from "@/lib/db";
+const schema=z.object({status:z.enum(["NEW","CONFIRMED","PREPARING","READY","OUT_FOR_DELIVERY","COMPLETED","CANCELLED"])});
+export async function PATCH(r:Request,{params}:{params:{id:string}}){if(!requireAdmin(r))return fail("Unauthorized",401);const p=schema.safeParse(await r.json().catch(()=>null));if(!p.success)return fail("Invalid status");await db.execute("UPDATE orders SET status=? WHERE id=?",[p.data.status,params.id]);return NextResponse.json({ok:true})}

@@ -1,0 +1,18 @@
+NØIR BEAN V9 — FINAL UI / RESPONSIVE FIXES
+
+- Fixed admin product image containment so product photos never overlap card text.
+- Enlarged desktop navigation labels.
+- Account dropdown closes when clicking outside it, navigating, or opening another control.
+- Removed the incomplete language toggle and locked the customer interface to English.
+- Improved mobile/tablet navigation and admin dashboard layout.
+- Added responsive image and touch safeguards.
+- Preserved authentication, admin dashboard, order builder, backend APIs, database, chatbot, and Open Graph preview.
+
+Before launch:
+1) Copy .env.local.
+2) npm install
+3) $env:NODE_OPTIONS="--use-system-ca"
+4) npm run build
+5) npm start
+
+For production, replace NEXT_PUBLIC_SITE_URL with the live HTTPS domain and use a hosted MySQL database.

@@ -1,0 +1,5 @@
+# MySQL 8 database already created in Workbench
+DATABASE_URL="mysql://root:YOUR_PASSWORD@127.0.0.1:3306/noir_bean"
+AUTH_SECRET="replace-with-a-long-random-secret-at-least-32-characters"
+ADMIN_PASSWORD="replace-with-a-strong-admin-password"
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"

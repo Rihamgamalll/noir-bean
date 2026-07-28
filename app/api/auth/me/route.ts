@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server"; import { currentSession,fail } from "@/lib/http"; import { db } from "@/lib/db";
+export async function GET(){const s=currentSession();if(!s)return fail("Unauthorized",401);const [rows]:any=await db.execute("SELECT id,name,email,phone,role,preferred_language AS language,created_at AS createdAt FROM users WHERE id=?",[s.userId]);return rows[0]?NextResponse.json({user:rows[0]}):fail("Unauthorized",401)}

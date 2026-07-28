@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server";import { db } from "@/lib/db";import { requireAdmin,fail } from "@/lib/http";
+export async function GET(r:Request){if(!requireAdmin(r))return fail("Unauthorized",401);const [rows]:any=await db.query(`SELECT u.id,u.name,u.email,u.phone,u.role,u.preferred_language AS preferredLanguage,u.created_at AS createdAt,COUNT(o.id) AS ordersCount,COALESCE(SUM(o.total),0) AS totalSpent FROM users u LEFT JOIN orders o ON o.user_id=u.id GROUP BY u.id ORDER BY u.created_at DESC`);return NextResponse.json({customers:rows});}

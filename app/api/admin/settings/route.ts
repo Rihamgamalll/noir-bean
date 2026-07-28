@@ -1,0 +1,4 @@
+import { NextResponse } from "next/server"; import { z } from "zod"; import { db } from "@/lib/db"; import { requireAdmin,fail } from "@/lib/http";
+const schema=z.record(z.string().max(3000));
+export async function GET(r:Request){if(!requireAdmin(r))return fail('Unauthorized',401);const [rows]:any=await db.query('SELECT setting_key,setting_value FROM site_settings');return NextResponse.json({settings:Object.fromEntries(rows.map((x:any)=>[x.setting_key,x.setting_value]))})}
+export async function PUT(r:Request){if(!requireAdmin(r))return fail('Unauthorized',401);const p=schema.safeParse(await r.json().catch(()=>null));if(!p.success)return fail('Invalid settings');for(const [k,v] of Object.entries(p.data))await db.execute('INSERT INTO site_settings(setting_key,setting_value) VALUES(?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)',[k,v]);return NextResponse.json({ok:true})}

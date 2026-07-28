@@ -1,0 +1,15 @@
+NØIR BEAN V8
+- لوحة إدارة كاملة: Dashboard / Products / Orders / Customers / Coupons / Categories
+- إضافة وتعديل وإخفاء المنتجات
+- إضافة وتعديل وحذف الأقسام
+- إضافة وتعديل وحذف الكوبونات
+- عرض العملاء وإجمالي طلباتهم
+- متابعة الطلبات وتغيير حالتها
+- تكبير روابط شريط التنقل العلوي
+- الحفاظ على Order Builder والشات وباقي تصميم V7
+
+انسخي .env.local من نسختك الحالية ثم:
+npm install
+$env:NODE_OPTIONS="--use-system-ca"
+npm run build
+npm run dev
