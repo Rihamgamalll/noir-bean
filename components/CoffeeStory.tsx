@@ -180,14 +180,23 @@ export default function CoffeeStory() {
         transformOrigin: "center center",
       });
 
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=2350",
-          scrub: 1.1,
+          end: () =>
+            `+=${
+              isMobile
+                ? Math.max(Math.round(window.innerHeight * 4.15), 3000)
+                : 2350
+            }`,
+          scrub: isMobile ? 0.32 : 0.72,
           pin: true,
+          pinSpacing: true,
           anticipatePin: 1,
+          refreshPriority: 20,
           invalidateOnRefresh: true,
         },
       });

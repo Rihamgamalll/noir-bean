@@ -159,7 +159,8 @@ export default function Hero() {
           start: "top top",
           endTrigger: "#coffee-story",
           end: "bottom bottom",
-          scrub: isMobile ? 0.65 : 1.15,
+          scrub: isMobile ? 0.32 : 0.72,
+          refreshPriority: 30,
           invalidateOnRefresh: true,
         },
       });
@@ -227,8 +228,10 @@ export default function Hero() {
         start: "top top",
         end: isMobile ? "+=115%" : "+=145%",
         pin: true,
-        scrub: isMobile ? 0.65 : 1,
+        pinSpacing: true,
+        scrub: isMobile ? 0.32 : 0.72,
         anticipatePin: 1,
+        refreshPriority: 30,
         invalidateOnRefresh: true,
       
         onUpdate: (self) => {
@@ -258,7 +261,9 @@ export default function Hero() {
           trigger: root.current,
           start: "top top",
           end: "+=100%",
-          scrub: isMobile ? 0.65 : 1,
+          scrub: isMobile ? 0.32 : 0.72,
+          refreshPriority: 30,
+          invalidateOnRefresh: true,
         },
       });
     },

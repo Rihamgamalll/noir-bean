@@ -93,3 +93,23 @@ input, select, textarea, button { max-width: 100%; }
     transform: translateZ(0);
   }
 }
+
+
+/* Smooth pinned-scene rendering without changing the visual design. */
+html, body {
+  overscroll-behavior-y: none;
+}
+
+@media (max-width: 767px) {
+  body {
+    touch-action: pan-y;
+  }
+
+  #home,
+  #coffee-story,
+  #alchemy {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+}

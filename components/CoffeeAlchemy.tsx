@@ -165,14 +165,23 @@ export default function CoffeeAlchemy() {
         opacity: 0.12,
       });
 
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=3000",
-          scrub: 1.15,
+          end: () =>
+            `+=${
+              isMobile
+                ? Math.max(Math.round(window.innerHeight * 4.8), 3600)
+                : 3000
+            }`,
+          scrub: isMobile ? 0.32 : 0.75,
           pin: true,
+          pinSpacing: true,
           anticipatePin: 1,
+          refreshPriority: 10,
           invalidateOnRefresh: true,
         },
       });
