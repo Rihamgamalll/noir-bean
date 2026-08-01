@@ -765,7 +765,7 @@ export default function CoffeeStory() {
       <section
         id="coffee-story"
         ref={sectionRef}
-        className="relative h-screen overflow-hidden bg-[#e9d8bd]"
+        className="relative h-[100svh] min-h-[640px] overflow-hidden bg-[#e9d8bd] md:h-screen md:min-h-0"
       >
         <div className="absolute inset-0">
           <Image
@@ -815,9 +815,9 @@ export default function CoffeeStory() {
          */}
         <div
           ref={contentRef}
-          className="absolute inset-0 z-20 mx-auto flex w-full max-w-[1600px] items-center px-5 py-8 md:px-10 lg:px-14"
+          className="absolute inset-0 z-20 mx-auto flex w-full max-w-[1600px] items-center px-3 py-5 sm:px-4 sm:py-6 md:px-10 md:py-8 lg:px-14"
         >
-          <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+          <div className="grid h-full max-h-[calc(100svh-40px)] w-full grid-cols-2 grid-rows-4 gap-2 sm:gap-3 md:h-auto md:max-h-none md:grid-cols-4 md:grid-rows-2 md:gap-6">
             {storyItems.map((item, index) => (
               <button
                 key={`story-item-${index}`}
@@ -826,10 +826,10 @@ export default function CoffeeStory() {
                 }}
                 type="button"
                 onClick={() => openModal(index)}
-                className={`group relative min-h-[210px] overflow-hidden rounded-[18px] border border-white/55 text-left shadow-[0_22px_55px_rgba(65,37,20,.16)] outline-none transition duration-500 hover:-translate-y-2 hover:scale-[1.025] hover:shadow-[0_34px_75px_rgba(65,37,20,.26)] focus-visible:ring-4 focus-visible:ring-[#a96c45]/35 md:min-h-[260px] ${
+                className={`group relative h-full min-h-0 overflow-hidden rounded-[14px] border border-white/55 text-left shadow-[0_12px_28px_rgba(65,37,20,.14)] outline-none transition duration-500 hover:-translate-y-2 hover:scale-[1.025] hover:shadow-[0_34px_75px_rgba(65,37,20,.26)] focus-visible:ring-4 focus-visible:ring-[#a96c45]/35 md:min-h-[260px] md:rounded-[18px] md:shadow-[0_22px_55px_rgba(65,37,20,.16)] ${
                   item.type === "image"
                     ? "bg-transparent"
-                    : "bg-[#f7ead8]/84 p-5 text-[#5f3b27] backdrop-blur-[5px] md:p-7"
+                    : "bg-[#f7ead8]/84 p-3 text-[#5f3b27] backdrop-blur-[3px] sm:p-4 md:p-7 md:backdrop-blur-[5px]"
                 }`}
                 aria-label={`Open ${item.title}`}
               >
@@ -846,7 +846,7 @@ export default function CoffeeStory() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-white/5 opacity-70 transition group-hover:opacity-90" />
                     </div>
 
-                    <div className="absolute bottom-5 left-5 right-5 flex translate-y-3 items-end justify-between opacity-0 transition duration-400 group-hover:translate-y-0 group-hover:opacity-100">
+                    <div className="absolute bottom-2 left-2 right-2 hidden translate-y-3 items-end justify-between opacity-0 transition duration-400 group-hover:translate-y-0 group-hover:opacity-100 md:flex md:bottom-5 md:left-5 md:right-5">
                       <span className="text-[10px] uppercase tracking-[0.22em] text-white">
                         Open full image
                       </span>
@@ -857,12 +857,12 @@ export default function CoffeeStory() {
                   </>
                 ) : (
                   <div className="flex h-full flex-col justify-between">
-                    <span className="text-[9px] uppercase tracking-[0.28em] text-[#a16c49]">
+                    <span className="text-[7px] uppercase tracking-[0.18em] text-[#a16c49] sm:text-[8px] sm:tracking-[0.22em] md:text-[9px] md:tracking-[0.28em]">
                       {item.label}
                     </span>
 
                     <h3
-                      className="text-[clamp(20px,2vw,32px)] leading-[1.08]"
+                      className="text-[15px] leading-[1.08] sm:text-[17px] md:text-[clamp(20px,2vw,32px)]"
                       style={{
                         fontFamily: "'Segoe Print', 'Comic Sans MS', cursive",
                       }}
@@ -871,15 +871,15 @@ export default function CoffeeStory() {
                     </h3>
 
                     <div>
-                      <p className="line-clamp-2 text-[11px] leading-5 text-[#805a40] md:text-[13px]">
+                      <p className="line-clamp-1 text-[9px] leading-4 text-[#805a40] sm:text-[10px] md:line-clamp-2 md:text-[13px] md:leading-5">
                         {item.body}
                       </p>
 
-                      <div className="mt-4 flex items-center justify-between border-t border-[#8b5e40]/12 pt-3">
-                        <span className="text-[9px] uppercase tracking-[0.2em] text-[#9a6a4b]">
+                      <div className="mt-2 flex items-center justify-between border-t border-[#8b5e40]/12 pt-2 md:mt-4 md:pt-3">
+                        <span className="text-[7px] uppercase tracking-[0.12em] text-[#9a6a4b] sm:text-[8px] md:text-[9px] md:tracking-[0.2em]">
                           Read full story
                         </span>
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#85583b]/15 bg-white/45 text-[#664029] transition duration-400 group-hover:rotate-45 group-hover:scale-110 group-hover:bg-white">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[#85583b]/15 bg-white/45 text-sm text-[#664029] transition duration-400 group-hover:rotate-45 group-hover:scale-110 group-hover:bg-white md:h-8 md:w-8 md:text-base">
                           +
                         </span>
                       </div>
