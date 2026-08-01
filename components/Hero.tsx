@@ -309,9 +309,18 @@ export default function Hero() {
       >
         <div
           ref={background}
-          className="absolute -inset-4 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/coffe.png')" }}
-        />
+          className="absolute -inset-4"
+        >
+          <Image
+            src="/coffe.png"
+            alt=""
+            fill
+            priority
+            quality={70}
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        </div>
 
         <div className="absolute inset-0 bg-[#68432f]/12 backdrop-blur-[0.8px]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,14,9,.76)_0%,rgba(40,22,15,.45)_35%,rgba(87,55,36,.05)_68%,rgba(37,18,11,.06)_100%)]" />
@@ -450,7 +459,8 @@ export default function Hero() {
     alt="Glass latte coffee"
     fill
     priority
-    sizes="50vw"
+    sizes="(max-width: 640px) 340px, (max-width: 768px) 400px, (max-width: 1200px) 620px, 720px"
+    quality={75}
     className="
       object-contain
       scale-[1.18]
