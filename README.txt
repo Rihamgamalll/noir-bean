@@ -1,11 +1,5 @@
-NOIR BEAN Chatbot Upgrade
+Replace only:
+- components/CoffeeStory.tsx
 
-Replace:
-- components/ChatBot.tsx
-- app/api/chat/route.ts
-
-Then run:
-npm run build
-git add .
-git commit -m "Upgrade chatbot fuzzy understanding and suggestions"
-git push
+The included app/globals.css is unchanged and does not need replacing.
+Then run npm run build, git add components/CoffeeStory.tsx, commit, and push.

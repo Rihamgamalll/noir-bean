@@ -89,6 +89,7 @@ export default function Hero() {
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
       const beanElements = beanRefs.current.filter(
         (bean): bean is HTMLDivElement => Boolean(bean),
@@ -105,9 +106,8 @@ export default function Hero() {
 
       intro
         .from(background.current, {
-          scale: 1.08,
-          opacity: 0,
-          duration: 1.7,
+          scale: isMobile ? 1.035 : 1.08,
+          duration: isMobile ? 1.05 : 1.7,
         })
         .from(
           "[data-kicker]",
@@ -119,9 +119,9 @@ export default function Hero() {
           {
             y: 75,
             opacity: 0,
-            filter: "blur(12px)",
-            stagger: 0.12,
-            duration: 1,
+            filter: isMobile ? "blur(4px)" : "blur(12px)",
+            stagger: isMobile ? 0.08 : 0.12,
+            duration: isMobile ? 0.75 : 1,
           },
           0.4,
         )
@@ -136,12 +136,11 @@ export default function Hero() {
           1.05,
         )
         .from(cup.current, {
-          y: 200,
-          scale: 100,
+          y: isMobile ? 90 : 200,
+          scale: isMobile ? 0.72 : 0.88,
           opacity: 0,
-          duration: 1.5,
-        }
-        )
+          duration: isMobile ? 1.05 : 1.5,
+        })
         .from(cupGhost.current, { opacity: 0, duration: 0.8 }, 1.2);
 
       /*
@@ -160,7 +159,7 @@ export default function Hero() {
           start: "top top",
           endTrigger: "#coffee-story",
           end: "bottom bottom",
-          scrub: 1.15,
+          scrub: isMobile ? 0.65 : 1.15,
           invalidateOnRefresh: true,
         },
       });
@@ -226,15 +225,15 @@ export default function Hero() {
       ScrollTrigger.create({
         trigger: root.current,
         start: "top top",
-        end: "+=145%",
+        end: isMobile ? "+=115%" : "+=145%",
         pin: true,
-        scrub: 1,
+        scrub: isMobile ? 0.65 : 1,
         anticipatePin: 1,
         invalidateOnRefresh: true,
       
         onUpdate: (self) => {
           gsap.set(cup.current, {
-            y: self.progress * window.innerHeight * 0.72,
+            y: self.progress * window.innerHeight * (isMobile ? 0.56 : 0.72),
           });
         },
       
@@ -251,15 +250,15 @@ export default function Hero() {
       });
 
       gsap.to(content.current, {
-        y: -60,
-        opacity: 0.15,
-        filter: "blur(3px)",
+        y: isMobile ? -36 : -60,
+        opacity: isMobile ? 0.28 : 0.15,
+        filter: isMobile ? "blur(0px)" : "blur(3px)",
         ease: "none",
         scrollTrigger: {
           trigger: root.current,
           start: "top top",
           end: "+=100%",
-          scrub: 1,
+          scrub: isMobile ? 0.65 : 1,
         },
       });
     },
@@ -305,7 +304,7 @@ export default function Hero() {
       <section
         id="home"
         ref={root}
-        className="relative min-h-[760px] overflow-hidden bg-[#8b6047] text-white sm:min-h-[820px] md:h-[100svh] md:min-h-[680px]"
+        className="relative min-h-[100svh] overflow-hidden bg-[#8b6047] text-white sm:min-h-[820px] md:h-[100svh] md:min-h-[680px]"
       >
         <div
           ref={background}
@@ -322,7 +321,7 @@ export default function Hero() {
           />
         </div>
 
-        <div className="absolute inset-0 bg-[#68432f]/12 backdrop-blur-[0.8px]" />
+        <div className="absolute inset-0 bg-[#68432f]/12 md:backdrop-blur-[0.8px]" />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,14,9,.76)_0%,rgba(40,22,15,.45)_35%,rgba(87,55,36,.05)_68%,rgba(37,18,11,.06)_100%)]" />
         <div className="absolute left-1/2 top-[57%] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f0d2b0]/13 blur-[120px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(24,11,7,.25)_100%)]" />
@@ -334,15 +333,15 @@ export default function Hero() {
             z-30
             mx-auto
             flex
-            min-h-[760px]
+            min-h-[100svh]
             max-w-[1500px]
             items-start
             px-5
-            pb-[390px]
+            pb-[330px]
             pt-28
 
             sm:px-7
-            sm:pb-[430px]
+            sm:pb-[400px]
 
             md:h-full
             md:items-center
@@ -413,7 +412,7 @@ export default function Hero() {
         <div
           ref={cupGhost}
           aria-hidden
-          className="pointer-events-none absolute bottom-8 left-1/2 z-10 h-[390px] w-[340px] -translate-x-1/2 opacity-[0.11] sm:h-[440px] sm:w-[400px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px]"
+          className="pointer-events-none absolute bottom-[6svh] left-1/2 z-10 h-[330px] w-[300px] -translate-x-1/2 opacity-[0.09] sm:bottom-[4vh] sm:h-[420px] sm:w-[380px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px]"
         >
           <Image
             src="/Cup.png"
@@ -428,17 +427,17 @@ export default function Hero() {
   ref={cup}
   className="
     absolute
-    bottom-[0vh]
+    bottom-[6svh]
     left-1/2
     z-20
-    h-[390px]
+    h-[330px]
     min-h-0
-    w-[340px]
+    w-[300px]
     -translate-x-1/2
 
-    sm:bottom-[1vh]
-    sm:h-[440px]
-    sm:w-[400px]
+    sm:bottom-[4vh]
+    sm:h-[420px]
+    sm:w-[380px]
 
     md:bottom-[6vh]
     md:h-[70vh]
@@ -463,10 +462,10 @@ export default function Hero() {
     quality={75}
     className="
       object-contain
-      scale-[1.18]
-      drop-shadow-[0_28px_34px_rgba(30,12,4,.35)]
+      scale-[1.06]
+      drop-shadow-[0_18px_22px_rgba(30,12,4,.28)] md:drop-shadow-[0_28px_34px_rgba(30,12,4,.35)]
 
-      sm:scale-[1.22]
+      sm:scale-[1.16]
 
       md:scale-[1.28]
 

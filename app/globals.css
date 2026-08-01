@@ -76,3 +76,20 @@ input, select, textarea, button { max-width: 100%; }
   body { font-size: 14px; }
   input, select, textarea { font-size: 16px; } /* prevents iOS auto zoom */
 }
+
+/* Mobile first-paint and compositor safeguards. Visual design is unchanged. */
+@media (max-width: 767px) {
+  #home {
+    background-color: #4b2b1d;
+    contain: paint;
+  }
+
+  #home img {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  #home [class*="blur-"] {
+    transform: translateZ(0);
+  }
+}
