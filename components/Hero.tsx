@@ -102,7 +102,7 @@ export default function Hero() {
         cupGhost.current,
         beanLayer.current,
         ...beanElements,
-      ].filter((element): element is HTMLElement => Boolean(element));
+      ].filter((element): element is HTMLDivElement => Boolean(element));
 
       gsap.set(compositorElements, {
         force3D: true,
@@ -173,7 +173,7 @@ export default function Hero() {
           start: "top top",
           endTrigger: "#coffee-story",
           end: "bottom bottom",
-          scrub: isMobile ? 0.32 : 0.14,
+          scrub: isMobile ? 0.32 : true,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -247,7 +247,7 @@ export default function Hero() {
         end: isMobile ? "+=115%" : "+=145%",
         pin: true,
         pinSpacing: true,
-        scrub: isMobile ? 0.32 : 0.14,
+        scrub: isMobile ? 0.32 : true,
         anticipatePin: 1,
         refreshPriority: 30,
         invalidateOnRefresh: true,
@@ -273,13 +273,13 @@ export default function Hero() {
       gsap.to(content.current, {
         y: isMobile ? -36 : -60,
         opacity: isMobile ? 0.28 : 0.15,
-        filter: "blur(0px)",
+        filter: isMobile ? "blur(0px)" : "blur(3px)",
         ease: "none",
         scrollTrigger: {
           trigger: root.current,
           start: "top top",
           end: "+=100%",
-          scrub: isMobile ? 0.32 : 0.14,
+          scrub: isMobile ? 0.32 : true,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -432,18 +432,25 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Mobile-only pastry detail: keeps the desktop composition intact. */}
+        {/* Mobile-only crop from the original café background so part of the pastry display remains visible. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-[13svh] right-[-24px] z-[18] h-[270px] w-[330px] rotate-[-8deg] sm:bottom-[12svh] sm:right-[-8px] sm:h-[320px] sm:w-[380px] md:hidden"
+          className="pointer-events-none absolute bottom-[11svh] right-[-7vw] z-[12] h-[39svh] min-h-[300px] w-[54vw] overflow-hidden md:hidden"
+          style={{
+            WebkitMaskImage:
+              "linear-gradient(90deg, transparent 0%, rgba(0,0,0,.78) 24%, #000 48%, #000 100%)",
+            maskImage:
+              "linear-gradient(90deg, transparent 0%, rgba(0,0,0,.78) 24%, #000 48%, #000 100%)",
+          }}
         >
           <Image
-            src="/pastries/plain-croissant.png"
+            src="/coffe.png"
             alt=""
             fill
-            sizes="320px"
-            className="object-contain object-right-bottom drop-shadow-[0_22px_28px_rgba(30,12,4,.42)]"
+            sizes="54vw"
+            className="scale-[1.48] object-cover object-[89%_56%] opacity-95"
           />
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#3b2015]/38" />
         </div>
 
         <div

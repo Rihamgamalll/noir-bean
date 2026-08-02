@@ -19,7 +19,7 @@ export function useSmoothScroll() {
 
     const lenis = new Lenis({
       // Keep the already-good mobile feel unchanged; make desktop react faster.
-      lerp: isDesktop ? 0.28 : 0.1,
+      lerp: isDesktop ? 0.11 : 0.1,
       smoothWheel: true,
       syncTouch: false,
       touchMultiplier: 1,

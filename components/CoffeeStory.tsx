@@ -150,7 +150,7 @@ export default function CoffeeStory() {
         ...beanElements,
         ...transitionBeanElements,
         ...storyCardElements,
-      ].filter((element): element is HTMLElement => Boolean(element));
+      ].filter((element): element is HTMLDivElement => Boolean(element));
 
       gsap.set(compositorElements, {
         force3D: true,
