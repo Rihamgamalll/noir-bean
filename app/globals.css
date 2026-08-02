@@ -35,7 +35,7 @@
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: auto; }
 body { overflow-x: hidden; }
 ::selection { background: #7b4b30; color: #fff8ef; }
 
@@ -111,5 +111,59 @@ html, body {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     transform: translateZ(0);
+  }
+}
+
+
+/* Scroll-performance safeguards for the first three pinned scenes.
+   These only affect rendering/compositing; layout and animation values stay unchanged. */
+#home,
+#coffee-story,
+#alchemy {
+  isolation: isolate;
+}
+
+#home img,
+#coffee-story img,
+#alchemy img {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+
+/* Desktop compositor pass: keeps the exact layout and animation path while
+   reducing repeated paint work on large transparent PNG layers. */
+@media (min-width: 768px) {
+  #home,
+  #coffee-story,
+  #alchemy {
+    contain: layout paint;
+  }
+
+  #home > div,
+  #coffee-story > div,
+  #alchemy > div {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  #home img,
+  #coffee-story img,
+  #alchemy img,
+  .alchemy-splash {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
+
+/* Ice must stay inside a phone viewport. Positions are supplied by GSAP;
+   these sizes preserve the desktop look while preventing mobile clipping. */
+@media (max-width: 767px) {
+  #alchemy {
+    min-height: 100svh;
+  }
+
+  #alchemy .alchemy-splash {
+    max-width: 165vw;
   }
 }

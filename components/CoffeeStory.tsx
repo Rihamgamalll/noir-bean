@@ -143,6 +143,20 @@ export default function CoffeeStory() {
         (card): card is HTMLButtonElement => Boolean(card),
       );
 
+      const compositorElements = [
+        cup,
+        sack,
+        content,
+        ...beanElements,
+        ...transitionBeanElements,
+        ...storyCardElements,
+      ].filter((element): element is HTMLElement => Boolean(element));
+
+      gsap.set(compositorElements, {
+        force3D: true,
+        backfaceVisibility: "hidden",
+      });
+
       gsap.set(cup, {
         y: -520,
         scale: 0.8,

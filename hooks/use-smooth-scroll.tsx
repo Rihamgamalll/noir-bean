@@ -15,11 +15,17 @@ if (typeof window !== 'undefined') {
  */
 export function useSmoothScroll() {
   useEffect(() => {
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      // Keep the mobile feel exactly as it is, while making desktop wheel
+      // input respond faster so the page does not feel one step behind.
+      lerp: isTouchDevice ? 0.1 : 0.16,
       smoothWheel: true,
-      touchMultiplier: 1.5,
+      syncTouch: false,
+      touchMultiplier: 1,
+      wheelMultiplier: 1,
+      autoRaf: false,
     });
 
     lenis.on('scroll', ScrollTrigger.update);
@@ -28,7 +34,7 @@ export function useSmoothScroll() {
       lenis.raf(time * 1000);
     };
     gsap.ticker.add(onTick);
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(500, 33);
 
     return () => {
       gsap.ticker.remove(onTick);

@@ -62,6 +62,15 @@ const iceFinalPositions = [
   },
 ];
 
+const mobileIceFinalPositions = [
+  { x: -132, y: -255, scale: 0.82, rotation: -42, depth: "front" },
+  { x: 132, y: -235, scale: 0.9, rotation: 35, depth: "front" },
+  { x: -145, y: 205, scale: 0.76, rotation: 28, depth: "back" },
+  { x: 146, y: 220, scale: 0.82, rotation: -38, depth: "back" },
+  { x: -72, y: -360, scale: 0.66, rotation: 58, depth: "front" },
+  { x: 82, y: 330, scale: 0.72, rotation: -55, depth: "back" },
+];
+
 const beanFinalPositions = [
   { x: -410, y: -110, scale: 0.85, rotation: -220 },
   { x: 420, y: -125, scale: 0.95, rotation: 240 },
@@ -101,6 +110,22 @@ export default function CoffeeAlchemy() {
       const beanElements = beanRefs.current.filter(
         (element): element is HTMLDivElement => Boolean(element),
       );
+
+      const compositorElements = [
+        cup,
+        milk,
+        coffee,
+        title,
+        glow,
+        shadow,
+        ...ice,
+        ...beanElements,
+      ].filter((element): element is HTMLElement => Boolean(element));
+
+      gsap.set(compositorElements, {
+        force3D: true,
+        backfaceVisibility: "hidden",
+      });
 
       gsap.set(cup, {
         y: 210,
@@ -149,10 +174,12 @@ export default function CoffeeAlchemy() {
         opacity: 0.38,
       });
 
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
       gsap.set(ice, {
         x: 0,
-        y: -500,
-        scale: 0.35,
+        y: isMobile ? -360 : -500,
+        scale: isMobile ? 0.26 : 0.35,
         rotation: 0,
         opacity: 0.12,
       });
@@ -165,8 +192,6 @@ export default function CoffeeAlchemy() {
         opacity: 0.12,
       });
 
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -177,7 +202,7 @@ export default function CoffeeAlchemy() {
                 ? Math.max(Math.round(window.innerHeight * 4.8), 3600)
                 : 3000
             }`,
-          scrub: isMobile ? 0.32 : 0.75,
+          scrub: isMobile ? 0.32 : 0.5,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
@@ -415,7 +440,7 @@ export default function CoffeeAlchemy() {
        */
 
       ice.forEach((element, index) => {
-        const target = iceFinalPositions[index];
+        const target = (isMobile ? mobileIceFinalPositions : iceFinalPositions)[index];
 
         timeline
           .set(
@@ -605,7 +630,7 @@ export default function CoffeeAlchemy() {
     <section
       id="alchemy"
       ref={sectionRef}
-      className="relative h-screen min-h-[720px] overflow-hidden bg-[#a86f49] text-white"
+      className="alchemy-scene relative h-screen min-h-[720px] overflow-hidden bg-[#a86f49] text-white"
     >
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/bean-cafe.png')" }} />
       <div className="absolute inset-0 bg-[#5b2e1d]/42" />
@@ -644,7 +669,7 @@ export default function CoffeeAlchemy() {
 
       <div
         ref={milkRef}
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[920px] w-[1380px] max-w-[125vw] -translate-x-1/2 -translate-y-1/2"
+        className="alchemy-splash pointer-events-none absolute left-1/2 top-1/2 h-[920px] w-[1380px] max-w-[125vw] -translate-x-1/2 -translate-y-1/2"
       >
         <Image
           src="/alchemy/milk-splash.png"
@@ -660,7 +685,7 @@ export default function CoffeeAlchemy() {
 
       <div
         ref={coffeeRef}
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[1360px] max-w-[124vw] -translate-x-1/2 -translate-y-1/2"
+        className="alchemy-splash pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[1360px] max-w-[124vw] -translate-x-1/2 -translate-y-1/2"
       >
         <Image
           src="/alchemy/coffee-splash.png"

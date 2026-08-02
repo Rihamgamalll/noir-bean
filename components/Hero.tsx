@@ -95,6 +95,20 @@ export default function Hero() {
         (bean): bean is HTMLDivElement => Boolean(bean),
       );
 
+      const compositorElements = [
+        background.current,
+        content.current,
+        cup.current,
+        cupGhost.current,
+        beanLayer.current,
+        ...beanElements,
+      ].filter((element): element is HTMLElement => Boolean(element));
+
+      gsap.set(compositorElements, {
+        force3D: true,
+        backfaceVisibility: "hidden",
+      });
+
       if (reduceMotion) {
         gsap.set(beanElements, { opacity: 0.72 });
         return;
@@ -159,7 +173,7 @@ export default function Hero() {
           start: "top top",
           endTrigger: "#coffee-story",
           end: "bottom bottom",
-          scrub: isMobile ? 0.32 : 0.72,
+          scrub: isMobile ? 0.32 : 0.5,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -223,21 +237,25 @@ export default function Hero() {
           );
       });
 
+      const setCupY = cup.current
+        ? gsap.quickSetter(cup.current, "y", "px")
+        : null;
+
       ScrollTrigger.create({
         trigger: root.current,
         start: "top top",
         end: isMobile ? "+=115%" : "+=145%",
         pin: true,
         pinSpacing: true,
-        scrub: isMobile ? 0.32 : 0.72,
+        scrub: isMobile ? 0.32 : 0.5,
         anticipatePin: 1,
         refreshPriority: 30,
         invalidateOnRefresh: true,
       
         onUpdate: (self) => {
-          gsap.set(cup.current, {
-            y: self.progress * window.innerHeight * (isMobile ? 0.56 : 0.72),
-          });
+          setCupY?.(
+            self.progress * window.innerHeight * (isMobile ? 0.56 : 0.72),
+          );
         },
       
         onLeaveBack: () => {
@@ -261,7 +279,7 @@ export default function Hero() {
           trigger: root.current,
           start: "top top",
           end: "+=100%",
-          scrub: isMobile ? 0.32 : 0.72,
+          scrub: isMobile ? 0.32 : 0.5,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -412,6 +430,20 @@ export default function Hero() {
               </a>
             </div>
           </div>
+        </div>
+
+        {/* Mobile-only pastry detail: deliberately partial so the hero keeps its original composition. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-[74px] bottom-[17svh] z-[12] h-[190px] w-[235px] rotate-[-13deg] sm:-right-[54px] sm:bottom-[15svh] sm:h-[220px] sm:w-[270px] md:hidden"
+        >
+          <Image
+            src="/pastries/plain-croissant.png"
+            alt=""
+            fill
+            sizes="270px"
+            className="object-contain drop-shadow-[0_18px_24px_rgba(31,13,6,.42)]"
+          />
         </div>
 
         <div
