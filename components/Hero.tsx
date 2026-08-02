@@ -432,21 +432,23 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Mobile-only coffee sack: intentionally sits behind the cup and peeks in from the right. */}
+        {/* Mobile only: reveal the sack that already exists inside coffe.png.
+            It stays behind the cup, under the Taste the menu area.
+            Desktop is untouched because this layer is hidden from md upward. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-[4svh] right-[-118px] z-[15] h-[235px] w-[330px] md:hidden"
-        >
-          <div className="absolute bottom-[8%] left-[16%] h-10 w-[70%] rounded-full bg-black/35 blur-2xl" />
-          <Image
-            src="/sack.png"
-            alt=""
-            fill
-            sizes="330px"
-            quality={82}
-            className="object-contain drop-shadow-[0_18px_24px_rgba(30,12,4,.34)]"
-          />
-        </div>
+          className="pointer-events-none absolute bottom-[7svh] left-[-18px] z-[14] h-[250px] w-[245px] overflow-hidden md:hidden"
+          style={{
+            backgroundImage: "url('/coffe.png')",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "760px auto",
+            backgroundPosition: "left bottom",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 88% 86% at 48% 57%, #000 54%, transparent 100%)",
+            maskImage:
+              "radial-gradient(ellipse 88% 86% at 48% 57%, #000 54%, transparent 100%)",
+          }}
+        />
 
         <div
           ref={cupGhost}
