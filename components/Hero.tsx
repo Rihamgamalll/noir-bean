@@ -331,16 +331,16 @@ export default function Hero() {
       >
         <div
           ref={background}
-          className="absolute -inset-4"
+          className="absolute inset-0"
         >
           <Image
-            src="/coffe.png"
+            src="/Coffe.png"
             alt=""
             fill
             priority
-            quality={70}
+            quality={85}
             sizes="100vw"
-            className="object-cover object-[76%_center] md:object-center"
+            className="object-cover object-[54%_center] sm:object-[56%_center] md:object-center"
           />
         </div>
 
@@ -431,24 +431,6 @@ export default function Hero() {
             </div>
           </div>
         </div>
-
-        {/* Mobile only: reveal the sack that already exists inside coffe.png.
-            It stays behind the cup, under the Taste the menu area.
-            Desktop is untouched because this layer is hidden from md upward. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[7svh] left-[-18px] z-[14] h-[250px] w-[245px] overflow-hidden md:hidden"
-          style={{
-            backgroundImage: "url('/coffe.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "760px auto",
-            backgroundPosition: "left bottom",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 88% 86% at 48% 57%, #000 54%, transparent 100%)",
-            maskImage:
-              "radial-gradient(ellipse 88% 86% at 48% 57%, #000 54%, transparent 100%)",
-          }}
-        />
 
         <div
           ref={cupGhost}

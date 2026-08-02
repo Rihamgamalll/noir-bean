@@ -157,7 +157,7 @@ export default function Hero() {
         ref={background}
         className="absolute -inset-5 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/coffe.png')",
+          backgroundImage: "url('/Coffe.png')",
         }}
       />
 
