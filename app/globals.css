@@ -131,39 +131,18 @@ html, body {
 }
 
 
-/* Desktop compositor pass: keeps the exact layout and animation path while
-   reducing repeated paint work on large transparent PNG layers. */
+/* Desktop compositor tuning for the first three pinned scenes. */
 @media (min-width: 768px) {
-  #home,
-  #coffee-story,
-  #alchemy {
-    contain: layout paint;
-  }
-
-  #home > div,
-  #coffee-story > div,
-  #alchemy > div {
+  #home > *,
+  #coffee-story > *,
+  #alchemy > * {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }
 
   #home img,
   #coffee-story img,
-  #alchemy img,
-  .alchemy-splash {
-    transform: translateZ(0);
-    will-change: transform;
-  }
-}
-
-/* Ice must stay inside a phone viewport. Positions are supplied by GSAP;
-   these sizes preserve the desktop look while preventing mobile clipping. */
-@media (max-width: 767px) {
-  #alchemy {
-    min-height: 100svh;
-  }
-
-  #alchemy .alchemy-splash {
-    max-width: 165vw;
+  #alchemy img {
+    transform: translate3d(0, 0, 0);
   }
 }

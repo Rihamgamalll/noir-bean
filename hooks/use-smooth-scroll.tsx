@@ -15,12 +15,11 @@ if (typeof window !== 'undefined') {
  */
 export function useSmoothScroll() {
   useEffect(() => {
-    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
 
     const lenis = new Lenis({
-      // Keep the mobile feel exactly as it is, while making desktop wheel
-      // input respond faster so the page does not feel one step behind.
-      lerp: isTouchDevice ? 0.1 : 0.16,
+      // Keep the already-good mobile feel unchanged; make desktop react faster.
+      lerp: isDesktop ? 0.28 : 0.1,
       smoothWheel: true,
       syncTouch: false,
       touchMultiplier: 1,
@@ -34,7 +33,7 @@ export function useSmoothScroll() {
       lenis.raf(time * 1000);
     };
     gsap.ticker.add(onTick);
-    gsap.ticker.lagSmoothing(500, 33);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
       gsap.ticker.remove(onTick);

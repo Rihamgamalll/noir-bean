@@ -173,7 +173,7 @@ export default function Hero() {
           start: "top top",
           endTrigger: "#coffee-story",
           end: "bottom bottom",
-          scrub: isMobile ? 0.32 : 0.5,
+          scrub: isMobile ? 0.32 : 0.14,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -247,7 +247,7 @@ export default function Hero() {
         end: isMobile ? "+=115%" : "+=145%",
         pin: true,
         pinSpacing: true,
-        scrub: isMobile ? 0.32 : 0.5,
+        scrub: isMobile ? 0.32 : 0.14,
         anticipatePin: 1,
         refreshPriority: 30,
         invalidateOnRefresh: true,
@@ -273,13 +273,13 @@ export default function Hero() {
       gsap.to(content.current, {
         y: isMobile ? -36 : -60,
         opacity: isMobile ? 0.28 : 0.15,
-        filter: isMobile ? "blur(0px)" : "blur(3px)",
+        filter: "blur(0px)",
         ease: "none",
         scrollTrigger: {
           trigger: root.current,
           start: "top top",
           end: "+=100%",
-          scrub: isMobile ? 0.32 : 0.5,
+          scrub: isMobile ? 0.32 : 0.14,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -340,7 +340,7 @@ export default function Hero() {
             priority
             quality={70}
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-cover object-[56%_center] md:object-center"
           />
         </div>
 
@@ -432,17 +432,17 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Mobile-only pastry detail: deliberately partial so the hero keeps its original composition. */}
+        {/* Mobile-only pastry detail: keeps the desktop composition intact. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-[74px] bottom-[17svh] z-[12] h-[190px] w-[235px] rotate-[-13deg] sm:-right-[54px] sm:bottom-[15svh] sm:h-[220px] sm:w-[270px] md:hidden"
+          className="pointer-events-none absolute bottom-[13svh] right-[-24px] z-[18] h-[270px] w-[330px] rotate-[-8deg] sm:bottom-[12svh] sm:right-[-8px] sm:h-[320px] sm:w-[380px] md:hidden"
         >
           <Image
             src="/pastries/plain-croissant.png"
             alt=""
             fill
-            sizes="270px"
-            className="object-contain drop-shadow-[0_18px_24px_rgba(31,13,6,.42)]"
+            sizes="320px"
+            className="object-contain object-right-bottom drop-shadow-[0_22px_28px_rgba(30,12,4,.42)]"
           />
         </div>
 

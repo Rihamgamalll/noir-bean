@@ -60,15 +60,15 @@ const iceFinalPositions = [
     rotation: -55,
     depth: "back",
   },
-];
+ ];
 
 const mobileIceFinalPositions = [
-  { x: -132, y: -255, scale: 0.82, rotation: -42, depth: "front" },
-  { x: 132, y: -235, scale: 0.9, rotation: 35, depth: "front" },
-  { x: -145, y: 205, scale: 0.76, rotation: 28, depth: "back" },
-  { x: 146, y: 220, scale: 0.82, rotation: -38, depth: "back" },
-  { x: -72, y: -360, scale: 0.66, rotation: 58, depth: "front" },
-  { x: 82, y: 330, scale: 0.72, rotation: -55, depth: "back" },
+  { x: -122, y: -205, scale: 0.78, rotation: -34, depth: "front" },
+  { x: 122, y: -190, scale: 0.86, rotation: 30, depth: "front" },
+  { x: -128, y: 150, scale: 0.74, rotation: 24, depth: "back" },
+  { x: 128, y: 170, scale: 0.8, rotation: -30, depth: "front" },
+  { x: -78, y: -78, scale: 0.68, rotation: 48, depth: "front" },
+  { x: 82, y: 72, scale: 0.7, rotation: -46, depth: "front" },
 ];
 
 const beanFinalPositions = [
@@ -122,9 +122,12 @@ export default function CoffeeAlchemy() {
         ...beanElements,
       ].filter((element): element is HTMLElement => Boolean(element));
 
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
       gsap.set(compositorElements, {
         force3D: true,
         backfaceVisibility: "hidden",
+        willChange: "transform, opacity",
       });
 
       gsap.set(cup, {
@@ -174,12 +177,10 @@ export default function CoffeeAlchemy() {
         opacity: 0.38,
       });
 
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-
       gsap.set(ice, {
         x: 0,
         y: isMobile ? -360 : -500,
-        scale: isMobile ? 0.26 : 0.35,
+        scale: 0.35,
         rotation: 0,
         opacity: 0.12,
       });
@@ -202,7 +203,7 @@ export default function CoffeeAlchemy() {
                 ? Math.max(Math.round(window.innerHeight * 4.8), 3600)
                 : 3000
             }`,
-          scrub: isMobile ? 0.32 : 0.5,
+          scrub: isMobile ? 0.32 : 0.14,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
@@ -630,7 +631,7 @@ export default function CoffeeAlchemy() {
     <section
       id="alchemy"
       ref={sectionRef}
-      className="alchemy-scene relative h-screen min-h-[720px] overflow-hidden bg-[#a86f49] text-white"
+      className="relative h-[100svh] min-h-[640px] overflow-hidden md:h-screen md:min-h-[720px] bg-[#a86f49] text-white"
     >
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/bean-cafe.png')" }} />
       <div className="absolute inset-0 bg-[#5b2e1d]/42" />
@@ -669,7 +670,7 @@ export default function CoffeeAlchemy() {
 
       <div
         ref={milkRef}
-        className="alchemy-splash pointer-events-none absolute left-1/2 top-1/2 h-[920px] w-[1380px] max-w-[125vw] -translate-x-1/2 -translate-y-1/2"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[920px] w-[1380px] max-w-[125vw] -translate-x-1/2 -translate-y-1/2"
       >
         <Image
           src="/alchemy/milk-splash.png"
@@ -685,7 +686,7 @@ export default function CoffeeAlchemy() {
 
       <div
         ref={coffeeRef}
-        className="alchemy-splash pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[1360px] max-w-[124vw] -translate-x-1/2 -translate-y-1/2"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[900px] w-[1360px] max-w-[124vw] -translate-x-1/2 -translate-y-1/2"
       >
         <Image
           src="/alchemy/coffee-splash.png"
@@ -708,8 +709,8 @@ export default function CoffeeAlchemy() {
             }}
             className="
               absolute
-              h-[170px]
-              w-[170px]
+              h-[132px]
+              w-[132px]
               -translate-x-1/2
               -translate-y-1/2
               md:h-[220px]
