@@ -432,6 +432,22 @@ export default function Hero() {
           </div>
         </div>
 
+        {/* Mobile-only coffee sack: intentionally sits behind the cup and peeks in from the right. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-[4svh] right-[-118px] z-[15] h-[235px] w-[330px] md:hidden"
+        >
+          <div className="absolute bottom-[8%] left-[16%] h-10 w-[70%] rounded-full bg-black/35 blur-2xl" />
+          <Image
+            src="/sack.png"
+            alt=""
+            fill
+            sizes="330px"
+            quality={82}
+            className="object-contain drop-shadow-[0_18px_24px_rgba(30,12,4,.34)]"
+          />
+        </div>
+
         <div
           ref={cupGhost}
           aria-hidden
