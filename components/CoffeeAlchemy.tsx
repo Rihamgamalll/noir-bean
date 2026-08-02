@@ -63,12 +63,12 @@ const iceFinalPositions = [
  ];
 
 const mobileIceFinalPositions = [
-  { x: -155, y: -285, scale: 0.82, rotation: -34, depth: "front" },
-  { x: 152, y: -270, scale: 0.9, rotation: 30, depth: "front" },
-  { x: -168, y: 35, scale: 0.72, rotation: 24, depth: "front" },
-  { x: 165, y: 55, scale: 0.78, rotation: -30, depth: "front" },
-  { x: -120, y: 290, scale: 0.66, rotation: 48, depth: "front" },
-  { x: 125, y: 305, scale: 0.7, rotation: -46, depth: "front" },
+  { x: -132, y: -275, scale: 1.22, rotation: -34, depth: "front" },
+  { x: 132, y: -250, scale: 1.32, rotation: 30, depth: "front" },
+  { x: -138, y: 230, scale: 1.12, rotation: 24, depth: "back" },
+  { x: 138, y: 245, scale: 1.2, rotation: -30, depth: "back" },
+  { x: -48, y: -365, scale: 1.05, rotation: 48, depth: "front" },
+  { x: 68, y: 330, scale: 1.08, rotation: -46, depth: "back" },
 ];
 
 const beanFinalPositions = [
@@ -102,6 +102,8 @@ export default function CoffeeAlchemy() {
       const title = titleRef.current;
       const glow = glowRef.current;
       const shadow = shadowRef.current;
+
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
       const ice = iceRefs.current.filter(
         (element): element is HTMLDivElement => Boolean(element),
@@ -175,8 +177,6 @@ export default function CoffeeAlchemy() {
         opacity: 0.38,
       });
 
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-
       gsap.set(ice, {
         x: 0,
         y: isMobile ? -360 : -500,
@@ -203,7 +203,7 @@ export default function CoffeeAlchemy() {
                 ? Math.max(Math.round(window.innerHeight * 4.8), 3600)
                 : 3000
             }`,
-          scrub: isMobile ? 0.32 : true,
+          scrub: isMobile ? 0.32 : 0.16,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
@@ -709,8 +709,8 @@ export default function CoffeeAlchemy() {
             }}
             className="
               absolute
-              h-[170px]
-              w-[170px]
+              h-[205px]
+              w-[205px]
               -translate-x-1/2
               -translate-y-1/2
               md:h-[220px]

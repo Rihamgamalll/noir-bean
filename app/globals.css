@@ -131,8 +131,15 @@ html, body {
 }
 
 
-/* Desktop compositor tuning for the first three pinned scenes. */
+/* Desktop compositor tuning for the first three pinned scenes.
+   No layout, image, timing, or animation path is changed here. */
 @media (min-width: 768px) {
+  #home,
+  #coffee-story,
+  #alchemy {
+    contain: layout paint style;
+  }
+
   #home > *,
   #coffee-story > *,
   #alchemy > * {
@@ -143,6 +150,18 @@ html, body {
   #home img,
   #coffee-story img,
   #alchemy img {
-    transform: translate3d(0, 0, 0);
+    transform: translateZ(0);
+  }
+}
+
+
+/* Final requested mobile composition: reveal the original pastry case naturally. */
+@media (max-width: 767px) {
+  #home {
+    background-position: 76% center;
+  }
+
+  #alchemy {
+    overflow: hidden;
   }
 }

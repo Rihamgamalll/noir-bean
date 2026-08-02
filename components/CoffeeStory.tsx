@@ -206,7 +206,7 @@ export default function CoffeeStory() {
                 ? Math.max(Math.round(window.innerHeight * 4.15), 3000)
                 : 2350
             }`,
-          scrub: isMobile ? 0.32 : 0.16,
+          scrub: isMobile ? 0.32 : 0.18,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,

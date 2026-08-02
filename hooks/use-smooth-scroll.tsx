@@ -19,7 +19,7 @@ export function useSmoothScroll() {
 
     const lenis = new Lenis({
       // Keep the already-good mobile feel unchanged; make desktop react faster.
-      lerp: isDesktop ? 0.11 : 0.1,
+      lerp: isDesktop ? 0.22 : 0.1,
       smoothWheel: true,
       syncTouch: false,
       touchMultiplier: 1,
@@ -33,7 +33,7 @@ export function useSmoothScroll() {
       lenis.raf(time * 1000);
     };
     gsap.ticker.add(onTick);
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(500, 16);
 
     return () => {
       gsap.ticker.remove(onTick);

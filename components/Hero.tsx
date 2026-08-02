@@ -173,7 +173,7 @@ export default function Hero() {
           start: "top top",
           endTrigger: "#coffee-story",
           end: "bottom bottom",
-          scrub: isMobile ? 0.32 : true,
+          scrub: isMobile ? 0.32 : 0.16,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -247,7 +247,7 @@ export default function Hero() {
         end: isMobile ? "+=115%" : "+=145%",
         pin: true,
         pinSpacing: true,
-        scrub: isMobile ? 0.32 : true,
+        scrub: isMobile ? 0.32 : 0.16,
         anticipatePin: 1,
         refreshPriority: 30,
         invalidateOnRefresh: true,
@@ -279,7 +279,7 @@ export default function Hero() {
           trigger: root.current,
           start: "top top",
           end: "+=100%",
-          scrub: isMobile ? 0.32 : true,
+          scrub: isMobile ? 0.32 : 0.16,
           refreshPriority: 30,
           invalidateOnRefresh: true,
         },
@@ -340,7 +340,7 @@ export default function Hero() {
             priority
             quality={70}
             sizes="100vw"
-            className="object-cover object-[56%_center] md:object-center"
+            className="object-cover object-[76%_center] md:object-center"
           />
         </div>
 
@@ -430,27 +430,6 @@ export default function Hero() {
               </a>
             </div>
           </div>
-        </div>
-
-        {/* Mobile-only crop from the original café background so part of the pastry display remains visible. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[11svh] right-[-7vw] z-[12] h-[39svh] min-h-[300px] w-[54vw] overflow-hidden md:hidden"
-          style={{
-            WebkitMaskImage:
-              "linear-gradient(90deg, transparent 0%, rgba(0,0,0,.78) 24%, #000 48%, #000 100%)",
-            maskImage:
-              "linear-gradient(90deg, transparent 0%, rgba(0,0,0,.78) 24%, #000 48%, #000 100%)",
-          }}
-        >
-          <Image
-            src="/coffe.png"
-            alt=""
-            fill
-            sizes="54vw"
-            className="scale-[1.48] object-cover object-[89%_56%] opacity-95"
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#3b2015]/38" />
         </div>
 
         <div
