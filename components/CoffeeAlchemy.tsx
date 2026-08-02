@@ -63,12 +63,12 @@ const iceFinalPositions = [
  ];
 
 const mobileIceFinalPositions = [
-  { x: -122, y: -205, scale: 0.78, rotation: -34, depth: "front" },
-  { x: 122, y: -190, scale: 0.86, rotation: 30, depth: "front" },
-  { x: -128, y: 150, scale: 0.74, rotation: 24, depth: "back" },
-  { x: 128, y: 170, scale: 0.8, rotation: -30, depth: "front" },
-  { x: -78, y: -78, scale: 0.68, rotation: 48, depth: "front" },
-  { x: 82, y: 72, scale: 0.7, rotation: -46, depth: "front" },
+  { x: -155, y: -285, scale: 0.82, rotation: -34, depth: "front" },
+  { x: 152, y: -270, scale: 0.9, rotation: 30, depth: "front" },
+  { x: -168, y: 35, scale: 0.72, rotation: 24, depth: "front" },
+  { x: 165, y: 55, scale: 0.78, rotation: -30, depth: "front" },
+  { x: -120, y: 290, scale: 0.66, rotation: 48, depth: "front" },
+  { x: 125, y: 305, scale: 0.7, rotation: -46, depth: "front" },
 ];
 
 const beanFinalPositions = [
@@ -120,9 +120,7 @@ export default function CoffeeAlchemy() {
         shadow,
         ...ice,
         ...beanElements,
-      ].filter((element): element is HTMLElement => Boolean(element));
-
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      ].filter((element): element is HTMLDivElement => Boolean(element));
 
       gsap.set(compositorElements, {
         force3D: true,
@@ -177,6 +175,8 @@ export default function CoffeeAlchemy() {
         opacity: 0.38,
       });
 
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
       gsap.set(ice, {
         x: 0,
         y: isMobile ? -360 : -500,
@@ -203,7 +203,7 @@ export default function CoffeeAlchemy() {
                 ? Math.max(Math.round(window.innerHeight * 4.8), 3600)
                 : 3000
             }`,
-          scrub: isMobile ? 0.32 : 0.14,
+          scrub: isMobile ? 0.32 : true,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
@@ -631,7 +631,7 @@ export default function CoffeeAlchemy() {
     <section
       id="alchemy"
       ref={sectionRef}
-      className="relative h-[100svh] min-h-[640px] overflow-hidden md:h-screen md:min-h-[720px] bg-[#a86f49] text-white"
+      className="relative h-screen min-h-[720px] overflow-hidden bg-[#a86f49] text-white"
     >
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/bean-cafe.png')" }} />
       <div className="absolute inset-0 bg-[#5b2e1d]/42" />
@@ -709,8 +709,8 @@ export default function CoffeeAlchemy() {
             }}
             className="
               absolute
-              h-[132px]
-              w-[132px]
+              h-[170px]
+              w-[170px]
               -translate-x-1/2
               -translate-y-1/2
               md:h-[220px]
