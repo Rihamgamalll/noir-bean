@@ -296,7 +296,7 @@ export default function Hero() {
        */}
       <div
         ref={beanLayer}
-        className="pointer-events-none fixed inset-0 z-[70] overflow-hidden opacity-0"
+        className="pointer-events-none fixed inset-0 z-[70] overflow-hidden opacity-0 [contain:layout_paint_style]"
         aria-hidden
       >
         {heroBeans.map((bean, index) => (
@@ -305,7 +305,7 @@ export default function Hero() {
             ref={(element) => {
               beanRefs.current[index] = element;
             }}
-            className="absolute"
+            className="absolute will-change-transform"
             style={{
               left: `${bean.left}%`,
               top: `${bean.top}%`,
@@ -329,61 +329,33 @@ export default function Hero() {
         ref={root}
         className="relative min-h-[100svh] overflow-hidden bg-[#8b6047] text-white sm:min-h-[820px] md:h-[100svh] md:min-h-[680px]"
       >
-        <div ref={background} className="absolute inset-0">
-          {/* Mobile: eager optimized image with a balanced crop. */}
-          <Image
-            src="/Coffe.png"
-            alt=""
-            fill
-            priority
-            quality={72}
-            sizes="100vw"
-            fetchPriority="high"
-            className="object-cover object-[62%_center] md:hidden"
-          />
-
-          {/* Desktop keeps its original framing. */}
-          <Image
-            src="/Coffe.png"
-            alt=""
-            fill
-            priority
-            quality={82}
-            sizes="100vw"
-            className="hidden object-cover object-center md:block"
-          />
+        <div
+          ref={background}
+          className="absolute inset-0 will-change-transform [contain:layout_paint_style]"
+        >
+          <picture className="block h-full w-full">
+            <source
+              media="(max-width: 767px)"
+              srcSet="/Mobile-background.webp"
+              type="image/webp"
+            />
+            <img
+              src="/Coffe.png"
+              alt=""
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="h-full w-full object-cover object-center"
+            />
+          </picture>
         </div>
-
-        {/* Mobile only: coffee sack on the left, behind the cup.
-            CSS background avoids a broken-image icon while keeping desktop untouched. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[2.5svh] left-[-18px] z-[15] h-[205px] w-[190px] bg-contain bg-left-bottom bg-no-repeat drop-shadow-[0_16px_22px_rgba(44,24,14,.28)] md:hidden"
-          style={{ backgroundImage: "url('/Sack.png')" }}
-        />
-
-        {/* Mobile only: a feathered crop of the original croissant case on the right. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[1.5svh] right-[-8px] z-[15] h-[300px] w-[220px] overflow-hidden md:hidden"
-          style={{
-            backgroundImage: "url('/Coffe.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "760px auto",
-            backgroundPosition: "right bottom",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 100% 92% at 72% 72%, #000 48%, rgba(0,0,0,.92) 64%, transparent 100%)",
-            maskImage:
-              "radial-gradient(ellipse 100% 92% at 72% 72%, #000 48%, rgba(0,0,0,.92) 64%, transparent 100%)",
-          }}
-        />
 
         {/* طبقات إضاءة فاتحة بدون تعتيم أو blur قوي */}
         <div className="absolute inset-0 z-[5] bg-white/[0.025] md:backdrop-blur-[0.25px]" />
   
         <div className="absolute inset-0 z-[5] bg-[linear-gradient(90deg,rgba(28,14,9,.34)_0%,rgba(40,22,15,.14)_35%,rgba(255,255,255,.01)_68%,rgba(37,18,11,.02)_100%)]" />
   
-        <div className="absolute left-1/2 top-[57%] z-[5] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f7dfc7]/10 blur-[110px]" />
+        <div className="absolute left-1/2 top-[57%] z-[5] h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f7dfc7]/8 blur-[70px] md:h-[620px] md:w-[620px] md:bg-[#f7dfc7]/10 md:blur-[110px]" />
   
         <div className="absolute inset-0 z-[5] bg-[radial-gradient(circle_at_center,transparent_66%,rgba(24,11,7,.08)_100%)]" />
   
@@ -399,11 +371,11 @@ export default function Hero() {
             items-start
             px-5
             pb-[300px]
-            pt-[48svh]
+            pt-[42svh]
   
             sm:px-7
             sm:pb-[350px]
-            sm:pt-[43svh]
+            sm:pt-[40svh]
   
             md:h-full
             md:items-center
@@ -479,14 +451,14 @@ export default function Hero() {
         <div
           ref={cupGhost}
           aria-hidden
-          className="pointer-events-none absolute bottom-[1svh] left-1/2 z-10 h-[300px] w-[275px] -translate-x-1/2 opacity-[0.07] sm:bottom-[1vh] sm:h-[390px] sm:w-[350px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px] md:opacity-[0.09]"
+          className="pointer-events-none absolute bottom-[1svh] will-change-transform left-1/2 z-10 h-[300px] w-[275px] -translate-x-1/2 opacity-[0.07] sm:bottom-[1vh] sm:h-[390px] sm:w-[350px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px] md:opacity-[0.09]"
         >
           <Image
             src="/Cup.png"
             alt=""
             fill
             sizes="(max-width: 640px) 290px, (max-width: 768px) 360px, 500px"
-            className="scale-[1.26] object-contain opacity-70 blur-[2px] grayscale-[20%]"
+            className="scale-[1.2] object-contain opacity-55 blur-[1px] grayscale-[12%] md:scale-[1.26] md:opacity-70 md:blur-[2px] md:grayscale-[20%]"
           />
         </div>
   
@@ -494,6 +466,7 @@ export default function Hero() {
           ref={cup}
           className="
             absolute
+            will-change-transform
             bottom-[0.5svh]
             left-1/2
             z-20
