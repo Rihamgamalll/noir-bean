@@ -30,11 +30,10 @@ export const metadata: Metadata = {
       "Handcrafted coffee, cinematic atmosphere, and freshly baked croissants.",
     images: [
       {
-        url: `${siteUrl}/social-preview.png?v=10`,
+        url: "/social-preview.jpg?v=12",
         width: 1200,
         height: 630,
         alt: "NØIR BEAN café experience",
-        type: "image/png",
       },
     ],
     locale: "en_US",
@@ -46,18 +45,18 @@ export const metadata: Metadata = {
     title: "NØIR BEAN — Good Coffee. Good Day.",
     description:
       "Handcrafted coffee, cinematic atmosphere, and freshly baked croissants.",
-    images: [`${siteUrl}/social-preview.png?v=10`],
+    images: ["/social-preview.jpg?v=12"],
   },
 
   icons: {
     icon: [
       {
-        url: "/favicon.png?v=10",
+        url: "/favicon.png?v=12",
         type: "image/png",
       },
     ],
-    shortcut: "/favicon.png?v=10",
-    apple: "/apple-touch-icon.png?v=10",
+    shortcut: "/favicon.png?v=12",
+    apple: "/apple-touch-icon.png?v=12",
   },
 };
 
