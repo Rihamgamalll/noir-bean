@@ -254,7 +254,7 @@ export default function Hero() {
       
         onUpdate: (self) => {
           setCupY?.(
-            self.progress * window.innerHeight * (isMobile ? 0.56 : 0.72),
+            self.progress * window.innerHeight * (isMobile ? 0.34 : 0.72),
           );
         },
       
@@ -271,7 +271,7 @@ export default function Hero() {
       });
 
       gsap.to(content.current, {
-        y: isMobile ? -36 : -60,
+        y: isMobile ? -24 : -60,
         opacity: isMobile ? 0.28 : 0.15,
         filter: isMobile ? "blur(0px)" : "blur(3px)",
         ease: "none",
@@ -335,9 +335,9 @@ export default function Hero() {
             alt=""
             fill
             priority
-            unoptimized
+            quality={82}
             sizes="100vw"
-            className="object-cover object-[54%_center] sm:object-[56%_center] md:object-center"
+            className="object-cover object-[58%_center] sm:object-[56%_center] md:object-center"
           />
         </div>
   
@@ -361,8 +361,8 @@ export default function Hero() {
             max-w-[1500px]
             items-start
             px-5
-            pb-[330px]
-            pt-28
+            pb-[285px]
+            pt-[22svh]
   
             sm:px-7
             sm:pb-[400px]
@@ -376,7 +376,7 @@ export default function Hero() {
             lg:px-16
           "
         >
-          <div className="max-w-[500px] lg:-translate-y-5">
+          <div className="max-w-[360px] sm:max-w-[500px] lg:-translate-y-5">
             <p
               data-kicker
               className="mb-5 text-[9px] uppercase tracking-[0.4em] text-[#f2d5b7]"
@@ -387,7 +387,7 @@ export default function Hero() {
             <h1
               className="
                 font-serif
-                text-[clamp(2.5rem,12vw,4rem)]
+                text-[clamp(2.35rem,10.8vw,3.45rem)]
                 leading-[0.88]
                 tracking-[-0.045em]
   
@@ -410,14 +410,14 @@ export default function Hero() {
   
             <p
               data-description
-              className="mt-6 max-w-[430px] text-[13px] leading-6 text-white/82 md:text-[15px]"
+              className="mt-4 max-w-[430px] text-[12.5px] leading-[1.65] text-white/88 sm:mt-6 sm:text-[13px] sm:leading-6 md:text-[15px]"
             >
               A slow ritual of aroma, texture and warmth. Carefully roasted beans
               and café-crafted drinks made to turn every pause into something
               memorable.
             </p>
   
-            <div data-actions className="mt-7 flex flex-wrap gap-3">
+            <div data-actions className="mt-5 flex flex-wrap gap-3 sm:mt-7">
               <a
                 href="/menu"
                 className="rounded-full bg-[#ecd4b9] px-7 py-3.5 text-sm font-medium text-[#342016] shadow-[0_12px_35px_rgba(35,16,8,.18)] transition duration-300 hover:-translate-y-1 hover:bg-[#f5e1ca]"
@@ -438,7 +438,7 @@ export default function Hero() {
         <div
           ref={cupGhost}
           aria-hidden
-          className="pointer-events-none absolute bottom-[6svh] left-1/2 z-10 h-[330px] w-[300px] -translate-x-1/2 opacity-[0.09] sm:bottom-[4vh] sm:h-[420px] sm:w-[380px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px]"
+          className="pointer-events-none absolute bottom-[2svh] left-1/2 z-10 h-[290px] w-[270px] -translate-x-1/2 opacity-[0.07] sm:bottom-[1vh] sm:h-[390px] sm:w-[360px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px]"
         >
           <Image
             src="/Cup.png"
@@ -453,17 +453,17 @@ export default function Hero() {
           ref={cup}
           className="
             absolute
-            bottom-[-13svh]
+            bottom-[1.5svh]
             left-1/2
             z-20
-            h-[330px]
+            h-[290px]
             min-h-0
-            w-[300px]
+            w-[270px]
             -translate-x-1/2
   
-            sm:bottom-[-8vh]
-            sm:h-[420px]
-            sm:w-[380px]
+            sm:bottom-[-1vh]
+            sm:h-[390px]
+            sm:w-[360px]
   
             md:bottom-[-9vh]
             md:h-[70vh]
@@ -488,11 +488,11 @@ export default function Hero() {
             quality={75}
             className="
               object-contain
-              scale-[1.06]
+              scale-[1.02]
               drop-shadow-[0_18px_22px_rgba(30,12,4,.28)]
               md:drop-shadow-[0_28px_34px_rgba(30,12,4,.35)]
   
-              sm:scale-[1.16]
+              sm:scale-[1.12]
   
               md:scale-[1.28]
   
