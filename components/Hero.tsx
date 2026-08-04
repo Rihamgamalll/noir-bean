@@ -467,7 +467,7 @@ export default function Hero() {
           className="
             absolute
             will-change-transform
-            bottom-[0.5svh]
+            bottom-[13svh]
             left-1/2
             z-20
             h-[300px]
