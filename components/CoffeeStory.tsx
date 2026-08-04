@@ -791,14 +791,20 @@ export default function CoffeeStory() {
         className="relative h-[100svh] min-h-[640px] overflow-hidden bg-[#e9d8bd] md:h-screen md:min-h-0"
       >
         <div className="absolute inset-0">
-          <Image
-            src="/header.png"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
+          <picture className="block h-full w-full">
+            <source
+              media="(max-width: 767px)"
+              srcSet="/bean cafe mobile.png"
+            />
+            <img
+              src="/header.png"
+              alt=""
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="h-full w-full object-cover object-center"
+            />
+          </picture>
         </div>
 
         <div className="absolute inset-0 bg-[#f1e4ce]/66" />
