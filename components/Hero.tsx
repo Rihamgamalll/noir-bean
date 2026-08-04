@@ -120,8 +120,8 @@ export default function Hero() {
 
       intro
         .from(background.current, {
-          scale: isMobile ? 1.035 : 1.08,
-          duration: isMobile ? 1.05 : 1.7,
+          scale: isMobile ? 1.012 : 1.08,
+          duration: isMobile ? 0.72 : 1.7,
         })
         .from(
           "[data-kicker]",
@@ -254,7 +254,7 @@ export default function Hero() {
       
         onUpdate: (self) => {
           setCupY?.(
-            self.progress * window.innerHeight * (isMobile ? 0.34 : 0.72),
+            self.progress * window.innerHeight * (isMobile ? 0.3 : 0.72),
           );
         },
       
@@ -271,8 +271,8 @@ export default function Hero() {
       });
 
       gsap.to(content.current, {
-        y: isMobile ? -24 : -60,
-        opacity: isMobile ? 0.28 : 0.15,
+        y: isMobile ? -18 : -60,
+        opacity: isMobile ? 0.45 : 0.15,
         filter: isMobile ? "blur(0px)" : "blur(3px)",
         ease: "none",
         scrollTrigger: {
@@ -330,6 +330,19 @@ export default function Hero() {
         className="relative min-h-[100svh] overflow-hidden bg-[#8b6047] text-white sm:min-h-[820px] md:h-[100svh] md:min-h-[680px]"
       >
         <div ref={background} className="absolute inset-0">
+          {/* Mobile: eager optimized image with a balanced crop. */}
+          <Image
+            src="/Coffe.png"
+            alt=""
+            fill
+            priority
+            quality={72}
+            sizes="100vw"
+            fetchPriority="high"
+            className="object-cover object-[62%_center] md:hidden"
+          />
+
+          {/* Desktop keeps its original framing. */}
           <Image
             src="/Coffe.png"
             alt=""
@@ -337,18 +350,48 @@ export default function Hero() {
             priority
             quality={82}
             sizes="100vw"
-            className="object-cover object-[58%_center] sm:object-[56%_center] md:object-center"
+            className="hidden object-cover object-center md:block"
           />
         </div>
-  
+
+        {/* Mobile only: real coffee sack on the left, behind the cup. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-[4svh] left-[-26px] z-[16] h-[220px] w-[210px] md:hidden"
+        >
+          <Image
+            src="/Sack.png"
+            alt=""
+            fill
+            sizes="210px"
+            className="object-contain object-left-bottom drop-shadow-[0_16px_22px_rgba(44,24,14,.28)]"
+          />
+        </div>
+
+        {/* Mobile only: reveal the real croissant display from Coffe.png on the right. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-[2svh] right-[-18px] z-[16] h-[330px] w-[255px] overflow-hidden md:hidden"
+          style={{
+            backgroundImage: "url('/Coffe.png')",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "820px auto",
+            backgroundPosition: "right bottom",
+            WebkitMaskImage:
+              "linear-gradient(90deg,transparent 0%,#000 18%,#000 100%)",
+            maskImage:
+              "linear-gradient(90deg,transparent 0%,#000 18%,#000 100%)",
+          }}
+        />
+
         {/* طبقات إضاءة فاتحة بدون تعتيم أو blur قوي */}
-        <div className="absolute inset-0 bg-white/[0.025] md:backdrop-blur-[0.25px]" />
+        <div className="absolute inset-0 z-[5] bg-white/[0.025] md:backdrop-blur-[0.25px]" />
   
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,14,9,.42)_0%,rgba(40,22,15,.20)_35%,rgba(255,255,255,.015)_68%,rgba(37,18,11,.025)_100%)]" />
+        <div className="absolute inset-0 z-[5] bg-[linear-gradient(90deg,rgba(28,14,9,.34)_0%,rgba(40,22,15,.14)_35%,rgba(255,255,255,.01)_68%,rgba(37,18,11,.02)_100%)]" />
   
-        <div className="absolute left-1/2 top-[57%] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f7dfc7]/10 blur-[110px]" />
+        <div className="absolute left-1/2 top-[57%] z-[5] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f7dfc7]/10 blur-[110px]" />
   
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_62%,rgba(24,11,7,.10)_100%)]" />
+        <div className="absolute inset-0 z-[5] bg-[radial-gradient(circle_at_center,transparent_66%,rgba(24,11,7,.08)_100%)]" />
   
         <div
           ref={content}
@@ -361,11 +404,12 @@ export default function Hero() {
             max-w-[1500px]
             items-start
             px-5
-            pb-[285px]
-            pt-[22svh]
+            pb-[315px]
+            pt-[31svh]
   
             sm:px-7
-            sm:pb-[400px]
+            sm:pb-[360px]
+            sm:pt-[28svh]
   
             md:h-full
             md:items-center
@@ -376,10 +420,10 @@ export default function Hero() {
             lg:px-16
           "
         >
-          <div className="max-w-[360px] sm:max-w-[500px] lg:-translate-y-5">
+          <div className="max-w-[500px] md:max-w-[500px] lg:-translate-y-5">
             <p
               data-kicker
-              className="mb-5 text-[9px] uppercase tracking-[0.4em] text-[#f2d5b7]"
+              className="mb-4 text-[8px] uppercase tracking-[0.36em] text-[#f2d5b7] sm:mb-5 sm:text-[9px] sm:tracking-[0.4em]"
             >
               Freshly brewed · crafted with care
             </p>
@@ -387,11 +431,14 @@ export default function Hero() {
             <h1
               className="
                 font-serif
-                text-[clamp(2.35rem,10.8vw,3.45rem)]
-                leading-[0.88]
+                max-w-[330px]
+                text-[clamp(2.05rem,9.4vw,3.2rem)]
+                leading-[0.9]
                 tracking-[-0.045em]
   
-                sm:text-[clamp(3rem,8vw,4.6rem)]
+                sm:max-w-[470px]
+                sm:text-[clamp(2.8rem,7.5vw,4.3rem)]
+                md:max-w-none
                 md:text-[clamp(3.4rem,5vw,5.7rem)]
               "
             >
@@ -410,24 +457,24 @@ export default function Hero() {
   
             <p
               data-description
-              className="mt-4 max-w-[430px] text-[12.5px] leading-[1.65] text-white/88 sm:mt-6 sm:text-[13px] sm:leading-6 md:text-[15px]"
+              className="mt-4 max-w-[340px] text-[11.5px] leading-[1.6] text-white/90 sm:mt-5 sm:max-w-[430px] sm:text-[13px] md:mt-6 md:text-[15px]"
             >
               A slow ritual of aroma, texture and warmth. Carefully roasted beans
               and café-crafted drinks made to turn every pause into something
               memorable.
             </p>
   
-            <div data-actions className="mt-5 flex flex-wrap gap-3 sm:mt-7">
+            <div data-actions className="mt-5 flex flex-nowrap gap-3 sm:mt-6">
               <a
                 href="/menu"
-                className="rounded-full bg-[#ecd4b9] px-7 py-3.5 text-sm font-medium text-[#342016] shadow-[0_12px_35px_rgba(35,16,8,.18)] transition duration-300 hover:-translate-y-1 hover:bg-[#f5e1ca]"
+                className="whitespace-nowrap rounded-full bg-[#ecd4b9] px-6 py-3 text-[13px] sm:px-7 sm:py-3.5 sm:text-sm font-medium text-[#342016] shadow-[0_12px_35px_rgba(35,16,8,.18)] transition duration-300 hover:-translate-y-1 hover:bg-[#f5e1ca]"
               >
                 Taste the menu
               </a>
   
               <a
                 href="#coffee-story"
-                className="rounded-full border border-white/40 bg-black/5 px-7 py-3.5 text-sm text-white/95 backdrop-blur-md transition duration-300 hover:bg-white/10"
+                className="whitespace-nowrap rounded-full border border-white/40 bg-black/5 px-6 py-3 text-[13px] sm:px-7 sm:py-3.5 sm:text-sm text-white/95 backdrop-blur-md transition duration-300 hover:bg-white/10"
               >
                 Our story
               </a>
@@ -438,7 +485,7 @@ export default function Hero() {
         <div
           ref={cupGhost}
           aria-hidden
-          className="pointer-events-none absolute bottom-[2svh] left-1/2 z-10 h-[290px] w-[270px] -translate-x-1/2 opacity-[0.07] sm:bottom-[1vh] sm:h-[390px] sm:w-[360px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px]"
+          className="pointer-events-none absolute bottom-[1svh] left-1/2 z-10 h-[300px] w-[275px] -translate-x-1/2 opacity-[0.07] sm:bottom-[1vh] sm:h-[390px] sm:w-[350px] md:bottom-[5.5vh] md:h-[64vh] md:max-h-[640px] md:min-h-[480px] md:w-[520px] md:opacity-[0.09]"
         >
           <Image
             src="/Cup.png"
@@ -453,17 +500,17 @@ export default function Hero() {
           ref={cup}
           className="
             absolute
-            bottom-[1.5svh]
+            bottom-[0.5svh]
             left-1/2
             z-20
-            h-[290px]
+            h-[300px]
             min-h-0
-            w-[270px]
+            w-[275px]
             -translate-x-1/2
   
-            sm:bottom-[-1vh]
+            sm:bottom-[0.5vh]
             sm:h-[390px]
-            sm:w-[360px]
+            sm:w-[350px]
   
             md:bottom-[-9vh]
             md:h-[70vh]
@@ -492,7 +539,7 @@ export default function Hero() {
               drop-shadow-[0_18px_22px_rgba(30,12,4,.28)]
               md:drop-shadow-[0_28px_34px_rgba(30,12,4,.35)]
   
-              sm:scale-[1.12]
+              sm:scale-[1.1]
   
               md:scale-[1.28]
   
