@@ -2,9 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import SiteProviders from "@/components/SiteProviders";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://noir-bean-three.vercel.app";
+const siteUrl = "https://noir-bean-three.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -25,14 +23,14 @@ export const metadata: Metadata = {
 
   openGraph: {
     type: "website",
-    url: "/",
+    url: siteUrl,
     siteName: "NØIR BEAN",
     title: "NØIR BEAN — Good Coffee. Good Day.",
     description:
       "Handcrafted coffee, cinematic atmosphere, and freshly baked croissants.",
     images: [
       {
-        url: "/social-preview.png?v=7",
+        url: `${siteUrl}/social-preview.png?v=10`,
         width: 1200,
         height: 630,
         alt: "NØIR BEAN café experience",
@@ -48,18 +46,18 @@ export const metadata: Metadata = {
     title: "NØIR BEAN — Good Coffee. Good Day.",
     description:
       "Handcrafted coffee, cinematic atmosphere, and freshly baked croissants.",
-    images: ["/social-preview.png?v=7"],
+    images: [`${siteUrl}/social-preview.png?v=10`],
   },
 
   icons: {
     icon: [
       {
-        url: "/favicon.png?v=7",
+        url: "/favicon.png?v=10",
         type: "image/png",
       },
     ],
-    shortcut: "/favicon.png?v=7",
-    apple: "/apple-touch-icon.png?v=7",
+    shortcut: "/favicon.png?v=10",
+    apple: "/apple-touch-icon.png?v=10",
   },
 };
 
