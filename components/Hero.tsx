@@ -335,7 +335,7 @@ export default function Hero() {
             alt=""
             fill
             priority
-            quality={85}
+            unoptimized
             sizes="100vw"
             className="object-cover object-[54%_center] sm:object-[56%_center] md:object-center"
           />
