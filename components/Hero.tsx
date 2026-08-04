@@ -323,16 +323,13 @@ export default function Hero() {
           </div>
         ))}
       </div>
-
+  
       <section
         id="home"
         ref={root}
         className="relative min-h-[100svh] overflow-hidden bg-[#8b6047] text-white sm:min-h-[820px] md:h-[100svh] md:min-h-[680px]"
       >
-        <div
-          ref={background}
-          className="absolute inset-0"
-        >
+        <div ref={background} className="absolute inset-0">
           <Image
             src="/Coffe.png"
             alt=""
@@ -343,12 +340,16 @@ export default function Hero() {
             className="object-cover object-[54%_center] sm:object-[56%_center] md:object-center"
           />
         </div>
-
-        <div className="absolute inset-0 bg-[#68432f]/12 md:backdrop-blur-[0.8px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,14,9,.76)_0%,rgba(40,22,15,.45)_35%,rgba(87,55,36,.05)_68%,rgba(37,18,11,.06)_100%)]" />
-        <div className="absolute left-1/2 top-[57%] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f0d2b0]/13 blur-[120px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(24,11,7,.25)_100%)]" />
-
+  
+        {/* طبقات إضاءة فاتحة بدون تعتيم أو blur قوي */}
+        <div className="absolute inset-0 bg-white/[0.025] md:backdrop-blur-[0.25px]" />
+  
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,14,9,.42)_0%,rgba(40,22,15,.20)_35%,rgba(255,255,255,.015)_68%,rgba(37,18,11,.025)_100%)]" />
+  
+        <div className="absolute left-1/2 top-[57%] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f7dfc7]/10 blur-[110px]" />
+  
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_62%,rgba(24,11,7,.10)_100%)]" />
+  
         <div
           ref={content}
           className="
@@ -362,16 +363,16 @@ export default function Hero() {
             px-5
             pb-[330px]
             pt-28
-
+  
             sm:px-7
             sm:pb-[400px]
-
+  
             md:h-full
             md:items-center
             md:px-12
             md:pb-0
             md:pt-20
-
+  
             lg:px-16
           "
         >
@@ -382,14 +383,14 @@ export default function Hero() {
             >
               Freshly brewed · crafted with care
             </p>
-
+  
             <h1
               className="
                 font-serif
                 text-[clamp(2.5rem,12vw,4rem)]
                 leading-[0.88]
                 tracking-[-0.045em]
-
+  
                 sm:text-[clamp(3rem,8vw,4.6rem)]
                 md:text-[clamp(3.4rem,5vw,5.7rem)]
               "
@@ -397,14 +398,16 @@ export default function Hero() {
               <span data-title-line className="block">
                 Ceremonial
               </span>
+  
               <span data-title-line className="block italic text-[#efc89f]">
                 coffee,
               </span>
+  
               <span data-title-line className="block">
                 beautifully made.
               </span>
             </h1>
-
+  
             <p
               data-description
               className="mt-6 max-w-[430px] text-[13px] leading-6 text-white/82 md:text-[15px]"
@@ -413,7 +416,7 @@ export default function Hero() {
               and café-crafted drinks made to turn every pause into something
               memorable.
             </p>
-
+  
             <div data-actions className="mt-7 flex flex-wrap gap-3">
               <a
                 href="/menu"
@@ -421,7 +424,7 @@ export default function Hero() {
               >
                 Taste the menu
               </a>
-
+  
               <a
                 href="#coffee-story"
                 className="rounded-full border border-white/40 bg-black/5 px-7 py-3.5 text-sm text-white/95 backdrop-blur-md transition duration-300 hover:bg-white/10"
@@ -431,7 +434,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
-
+  
         <div
           ref={cupGhost}
           aria-hidden
@@ -445,65 +448,59 @@ export default function Hero() {
             className="scale-[1.26] object-contain opacity-70 blur-[2px] grayscale-[20%]"
           />
         </div>
-
+  
         <div
-  ref={cup}
-  className="
-    absolute
-    bottom-[6svh]
-    left-1/2
-    z-20
-    h-[330px]
-    min-h-0
-    w-[300px]
-    -translate-x-1/2
-
-    sm:bottom-[4vh]
-    sm:h-[420px]
-    sm:w-[380px]
-
-    md:bottom-[6vh]
-    md:h-[70vh]
-    md:min-h-[560px]
-    md:max-h-[760px]
-    md:w-[620px]
-
-    lg:bottom-[5vh]
-    lg:w-[670px]
-
-    xl:w-[720px]
-  "
->
-  <div className="absolute bottom-[7%] left-1/2 h-10 w-[52%] -translate-x-1/2 rounded-full bg-black/38 blur-2xl" />
-
-  <Image
-    src="/Cup.png"
-    alt="Glass latte coffee"
-    fill
-    priority
-    sizes="(max-width: 640px) 340px, (max-width: 768px) 400px, (max-width: 1200px) 620px, 720px"
-    quality={75}
-    className="
-      object-contain
-      scale-[1.06]
-      drop-shadow-[0_18px_22px_rgba(30,12,4,.28)] md:drop-shadow-[0_28px_34px_rgba(30,12,4,.35)]
-
-      sm:scale-[1.16]
-
-      md:scale-[1.28]
-
-      lg:scale-[1.33]
-    "
-  />
-</div>
-
-        <div className="absolute bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-white" />
-          <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
-          <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
-          <span className="h-1.5 w-1.5 rounded-full bg-white/45" />
+          ref={cup}
+          className="
+            absolute
+            bottom-[-13svh]
+            left-1/2
+            z-20
+            h-[330px]
+            min-h-0
+            w-[300px]
+            -translate-x-1/2
+  
+            sm:bottom-[-8vh]
+            sm:h-[420px]
+            sm:w-[380px]
+  
+            md:bottom-[-9vh]
+            md:h-[70vh]
+            md:min-h-[560px]
+            md:max-h-[760px]
+            md:w-[620px]
+  
+            lg:bottom-[-10vh]
+            lg:w-[670px]
+  
+            xl:w-[720px]
+          "
+        >
+          <div className="absolute bottom-[7%] left-1/2 h-10 w-[52%] -translate-x-1/2 rounded-full bg-black/38 blur-2xl" />
+  
+          <Image
+            src="/Cup.png"
+            alt="Glass latte coffee"
+            fill
+            priority
+            sizes="(max-width: 640px) 340px, (max-width: 768px) 400px, (max-width: 1200px) 620px, 720px"
+            quality={75}
+            className="
+              object-contain
+              scale-[1.06]
+              drop-shadow-[0_18px_22px_rgba(30,12,4,.28)]
+              md:drop-shadow-[0_28px_34px_rgba(30,12,4,.35)]
+  
+              sm:scale-[1.16]
+  
+              md:scale-[1.28]
+  
+              lg:scale-[1.33]
+            "
+          />
         </div>
       </section>
     </>
   );
-}
+  }

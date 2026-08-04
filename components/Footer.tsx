@@ -29,73 +29,90 @@ export default function Footer() {
   return (
     <footer
       id="contact"
-      className="relative overflow-hidden bg-[#160c08] px-6 pb-8 pt-20 text-[#f7eadb] md:px-12"
+      className="relative overflow-hidden px-6 pb-8 pt-20 text-[#3b2418] md:px-12"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_86%_18%,rgba(196,139,93,.2),transparent_34%),radial-gradient(circle_at_8%_88%,rgba(123,75,46,.18),transparent_31%)]" />
+      {/* صورة الخلفية */}
+      <div className="absolute inset-0">
+        <Image
+          src="/header.png"
+          alt=""
+          fill
+          priority={false}
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
 
-      <div className="absolute inset-0 opacity-[.1] [background-image:radial-gradient(rgba(255,255,255,.5)_0.6px,transparent_0.6px)] [background-size:6px_6px]" />
+      {/* طبقة فاتحة لتوضيح النص فوق الخلفية */}
+      <div className="absolute inset-0 bg-[#f5e8d8]/[0.88]" />
+
+      {/* تدرجات بنية خفيفة */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_86%_18%,rgba(151,96,56,.18),transparent_34%),radial-gradient(circle_at_8%_88%,rgba(115,69,40,.14),transparent_31%)]" />
+
+      {/* Texture خفيف */}
+      <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(rgba(74,43,25,.7)_0.6px,transparent_0.6px)] [background-size:6px_6px]" />
 
       <div className="relative mx-auto max-w-[1450px]">
-        <div className="grid gap-14 border-b border-white/10 pb-16 lg:grid-cols-[1.45fr_.75fr_.9fr_.8fr]">
+        <div className="grid gap-14 border-b border-[#70452f]/20 pb-16 lg:grid-cols-[1.45fr_.75fr_.9fr_.8fr]">
           <div>
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#c58c65]/35 bg-white/[.04] font-serif text-lg text-[#d8a27b]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#8a5739]/35 bg-white/35 font-serif text-lg text-[#6a3d26] shadow-[0_10px_30px_rgba(82,48,28,.12)] backdrop-blur-sm">
                 NØ
               </div>
 
               <div>
-                <p className="font-serif text-[32px] tracking-[.08em]">
+                <p className="font-serif text-[32px] tracking-[.08em] text-[#3d2418]">
                   NØIR BEAN
                 </p>
 
-                <p className="mt-1 text-[8px] uppercase tracking-[.42em] text-[#b77c56]">
+                <p className="mt-1 text-[8px] uppercase tracking-[.42em] text-[#8b5739]">
                   Coffee atelier
                 </p>
               </div>
             </div>
 
-            <p className="mt-8 max-w-[430px] text-[13px] leading-7 text-white/53">
+            <p className="mt-8 max-w-[430px] text-[13px] leading-7 text-[#523526]/75">
               A coffee atelier for slow rituals, bold flavour and beautifully
               engineered moments.
             </p>
           </div>
 
           <div>
-            <p className="text-[9px] uppercase tracking-[.36em] text-[#c18b64]">
+            <p className="text-[9px] uppercase tracking-[.36em] text-[#8a5739]">
               Navigation
             </p>
 
-            <nav className="mt-7 flex flex-col gap-3 text-sm text-white/62">
+            <nav className="mt-7 flex flex-col gap-3 text-sm text-[#4c3022]/75">
               <a
-                className="transition hover:translate-x-1 hover:text-white"
+                className="transition duration-300 hover:translate-x-1 hover:text-[#2f1b12]"
                 href="/#home"
               >
                 Home
               </a>
 
               <a
-                className="transition hover:translate-x-1 hover:text-white"
+                className="transition duration-300 hover:translate-x-1 hover:text-[#2f1b12]"
                 href="/#coffee-story"
               >
                 Our story
               </a>
 
               <a
-                className="transition hover:translate-x-1 hover:text-white"
+                className="transition duration-300 hover:translate-x-1 hover:text-[#2f1b12]"
                 href="/#alchemy"
               >
                 Experience
               </a>
 
               <a
-                className="transition hover:translate-x-1 hover:text-white"
+                className="transition duration-300 hover:translate-x-1 hover:text-[#2f1b12]"
                 href="/menu"
               >
                 Menu
               </a>
 
               <a
-                className="transition hover:translate-x-1 hover:text-white"
+                className="transition duration-300 hover:translate-x-1 hover:text-[#2f1b12]"
                 href="/admin"
               >
                 Admin
@@ -104,29 +121,29 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="text-[9px] uppercase tracking-[.36em] text-[#c18b64]">
+            <p className="text-[9px] uppercase tracking-[.36em] text-[#8a5739]">
               Contact
             </p>
 
-            <div className="mt-7 space-y-4 text-sm text-white/60">
+            <div className="mt-7 space-y-4 text-sm text-[#4c3022]/75">
               <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-[#c18b64]" />
+                <Mail className="h-4 w-4 text-[#8a5739]" />
                 contact@noirbean.com
               </div>
 
               <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-[#c18b64]" />
+                <Phone className="h-4 w-4 text-[#8a5739]" />
                 +20 100 000 0000
               </div>
 
-              <p className="pl-7 text-xs text-white/38">
+              <p className="pl-7 text-xs text-[#62412f]/60">
                 Daily · 7 AM–12 AM
               </p>
             </div>
           </div>
 
           <div>
-            <p className="text-[9px] uppercase tracking-[.36em] text-[#c18b64]">
+            <p className="text-[9px] uppercase tracking-[.36em] text-[#8a5739]">
               Follow RiWebs
             </p>
 
@@ -137,14 +154,14 @@ export default function Footer() {
                   href={href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.035] px-4 py-3 text-sm text-white/62 transition duration-300 hover:-translate-y-1 hover:border-[#c18b64]/45 hover:bg-white/[.075] hover:text-white"
+                  className="group flex items-center justify-between rounded-2xl border border-[#70452f]/20 bg-white/25 px-4 py-3 text-sm text-[#4c3022]/75 shadow-[0_10px_25px_rgba(82,48,28,.05)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-[#8a5739]/45 hover:bg-white/45 hover:text-[#2f1b12]"
                 >
                   <span className="flex items-center gap-3">
-                    <Icon className="h-4 w-4 text-[#c18b64] transition duration-300 group-hover:rotate-6 group-hover:scale-110" />
+                    <Icon className="h-4 w-4 text-[#8a5739] transition duration-300 group-hover:rotate-6 group-hover:scale-110" />
                     {label}
                   </span>
 
-                  <span className="text-white/28 transition group-hover:translate-x-1 group-hover:text-white/65">
+                  <span className="text-[#68432f]/45 transition group-hover:translate-x-1 group-hover:text-[#3e271b]/80">
                     ↗
                   </span>
                 </a>
@@ -154,7 +171,7 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-6 py-8 text-center md:flex-row md:text-left">
-          <span className="text-[9px] uppercase tracking-[.22em] text-white/30">
+          <span className="text-[9px] uppercase tracking-[.22em] text-[#5c3b2a]/55">
             © 2026 NØIR BEAN. All rights reserved.
           </span>
 
@@ -164,7 +181,7 @@ export default function Footer() {
             rel="noreferrer"
             className="group flex items-center gap-4 text-left"
           >
-            <span className="relative h-14 w-14 overflow-hidden rounded-full border border-white/15 bg-white shadow-[0_10px_30px_rgba(0,0,0,.35)]">
+            <span className="relative h-14 w-14 overflow-hidden rounded-full border border-[#70452f]/20 bg-white shadow-[0_10px_30px_rgba(82,48,28,.22)]">
               <Image
                 src="/branding/riwebs-logo.png"
                 alt="RiWebs logo"
@@ -175,17 +192,17 @@ export default function Footer() {
             </span>
 
             <span>
-              <span className="block text-[8px] uppercase tracking-[.32em] text-white/28">
+              <span className="block text-[8px] uppercase tracking-[.32em] text-[#5c3b2a]/55">
                 Designed & developed by
               </span>
 
-              <span className="mt-1 block font-serif text-2xl tracking-[.08em] text-[#d39a70] transition duration-300 group-hover:tracking-[.14em] group-hover:text-[#f0c3a0]">
+              <span className="mt-1 block font-serif text-2xl tracking-[.08em] text-[#7b4b31] transition duration-300 group-hover:tracking-[.14em] group-hover:text-[#4a2b1d]">
                 RiWebs
               </span>
             </span>
           </a>
 
-          <span className="text-[9px] uppercase tracking-[.22em] text-white/30">
+          <span className="text-[9px] uppercase tracking-[.22em] text-[#5c3b2a]/55">
             Crafted for the ritual
           </span>
         </div>
