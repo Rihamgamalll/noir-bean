@@ -354,33 +354,27 @@ export default function Hero() {
           />
         </div>
 
-        {/* Mobile only: real coffee sack on the left, behind the cup. */}
+        {/* Mobile only: coffee sack on the left, behind the cup.
+            CSS background avoids a broken-image icon while keeping desktop untouched. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-[4svh] left-[-26px] z-[16] h-[220px] w-[210px] md:hidden"
-        >
-          <Image
-            src="/Sack.png"
-            alt=""
-            fill
-            sizes="210px"
-            className="object-contain object-left-bottom drop-shadow-[0_16px_22px_rgba(44,24,14,.28)]"
-          />
-        </div>
+          className="pointer-events-none absolute bottom-[2.5svh] left-[-18px] z-[15] h-[205px] w-[190px] bg-contain bg-left-bottom bg-no-repeat drop-shadow-[0_16px_22px_rgba(44,24,14,.28)] md:hidden"
+          style={{ backgroundImage: "url('/Sack.png')" }}
+        />
 
-        {/* Mobile only: reveal the real croissant display from Coffe.png on the right. */}
+        {/* Mobile only: a feathered crop of the original croissant case on the right. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute bottom-[2svh] right-[-18px] z-[16] h-[330px] w-[255px] overflow-hidden md:hidden"
+          className="pointer-events-none absolute bottom-[1.5svh] right-[-8px] z-[15] h-[300px] w-[220px] overflow-hidden md:hidden"
           style={{
             backgroundImage: "url('/Coffe.png')",
             backgroundRepeat: "no-repeat",
-            backgroundSize: "820px auto",
+            backgroundSize: "760px auto",
             backgroundPosition: "right bottom",
             WebkitMaskImage:
-              "linear-gradient(90deg,transparent 0%,#000 18%,#000 100%)",
+              "radial-gradient(ellipse 100% 92% at 72% 72%, #000 48%, rgba(0,0,0,.92) 64%, transparent 100%)",
             maskImage:
-              "linear-gradient(90deg,transparent 0%,#000 18%,#000 100%)",
+              "radial-gradient(ellipse 100% 92% at 72% 72%, #000 48%, rgba(0,0,0,.92) 64%, transparent 100%)",
           }}
         />
 
@@ -404,12 +398,12 @@ export default function Hero() {
             max-w-[1500px]
             items-start
             px-5
-            pb-[315px]
-            pt-[31svh]
+            pb-[300px]
+            pt-[48svh]
   
             sm:px-7
-            sm:pb-[360px]
-            sm:pt-[28svh]
+            sm:pb-[350px]
+            sm:pt-[43svh]
   
             md:h-full
             md:items-center
@@ -423,7 +417,7 @@ export default function Hero() {
           <div className="max-w-[500px] md:max-w-[500px] lg:-translate-y-5">
             <p
               data-kicker
-              className="mb-4 text-[8px] uppercase tracking-[0.36em] text-[#f2d5b7] sm:mb-5 sm:text-[9px] sm:tracking-[0.4em]"
+              className="mb-3 text-[7.5px] uppercase tracking-[0.34em] text-[#f2d5b7] sm:mb-4 sm:text-[8.5px] sm:tracking-[0.38em] md:mb-5 md:text-[9px] md:tracking-[0.4em]"
             >
               Freshly brewed · crafted with care
             </p>
@@ -431,8 +425,8 @@ export default function Hero() {
             <h1
               className="
                 font-serif
-                max-w-[330px]
-                text-[clamp(2.05rem,9.4vw,3.2rem)]
+                max-w-[305px]
+                text-[clamp(1.82rem,8.25vw,2.75rem)]
                 leading-[0.9]
                 tracking-[-0.045em]
   
@@ -457,24 +451,24 @@ export default function Hero() {
   
             <p
               data-description
-              className="mt-4 max-w-[340px] text-[11.5px] leading-[1.6] text-white/90 sm:mt-5 sm:max-w-[430px] sm:text-[13px] md:mt-6 md:text-[15px]"
+              className="mt-3 max-w-[330px] text-[10.5px] leading-[1.55] text-white/92 sm:mt-4 sm:max-w-[410px] sm:text-[12px] md:mt-6 md:max-w-[430px] md:text-[15px]"
             >
               A slow ritual of aroma, texture and warmth. Carefully roasted beans
               and café-crafted drinks made to turn every pause into something
               memorable.
             </p>
   
-            <div data-actions className="mt-5 flex flex-nowrap gap-3 sm:mt-6">
+            <div data-actions className="mt-4 flex flex-nowrap gap-2.5 sm:mt-5 sm:gap-3 md:mt-7">
               <a
                 href="/menu"
-                className="whitespace-nowrap rounded-full bg-[#ecd4b9] px-6 py-3 text-[13px] sm:px-7 sm:py-3.5 sm:text-sm font-medium text-[#342016] shadow-[0_12px_35px_rgba(35,16,8,.18)] transition duration-300 hover:-translate-y-1 hover:bg-[#f5e1ca]"
+                className="whitespace-nowrap rounded-full bg-[#ecd4b9] px-5 py-2.5 text-[12px] sm:px-6 sm:py-3 sm:text-[13px] md:px-7 md:py-3.5 md:text-sm font-medium text-[#342016] shadow-[0_12px_35px_rgba(35,16,8,.18)] transition duration-300 hover:-translate-y-1 hover:bg-[#f5e1ca]"
               >
                 Taste the menu
               </a>
   
               <a
                 href="#coffee-story"
-                className="whitespace-nowrap rounded-full border border-white/40 bg-black/5 px-6 py-3 text-[13px] sm:px-7 sm:py-3.5 sm:text-sm text-white/95 backdrop-blur-md transition duration-300 hover:bg-white/10"
+                className="whitespace-nowrap rounded-full border border-white/40 bg-black/5 px-5 py-2.5 text-[12px] sm:px-6 sm:py-3 sm:text-[13px] md:px-7 md:py-3.5 md:text-sm text-white/95 backdrop-blur-md transition duration-300 hover:bg-white/10"
               >
                 Our story
               </a>
