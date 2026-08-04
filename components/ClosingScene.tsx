@@ -58,7 +58,7 @@ export default function ClosingScene() {
         <picture className="block h-full w-full">
           <source
             media="(max-width: 767px)"
-            srcSet="/bean cafe mobile.png"
+            srcSet="/Bean cafe mobile.png"
           />
           <img
             src="/bean-cafe.png"
